@@ -1,0 +1,89 @@
+* Web Fonts Component and Plugin
+
+** Description 
+
+The Web Fonts component and plugin are Joomla! extensions that connect
+to web services to allow Joomla! site owners to integrate non-web safe
+fonts into their websites via a simple interface.
+
+** License
+
+The Web Fonts component and plugin are licensed to the GPL 3.0 or
+later.
+
+** Sponsor
+
+Fonts.com has sponsored development for the first iteration of the
+extension which has been to create the base component and connect it
+to their Web Fonts service.  However, per their request, the extension
+is open to the implementation of other font services.
+
+** Author
+
+Blue Bridge Development authored the first iteration of the extension
+and this document.
+
+** Compatibility
+
+The extensions are compatible with versions 1.6 and 1.7 of Joomla!
+
+The extensions are tested for Opera, Chrome, Safari, Firefox, and IE
+8 and IE 9.
+
+** Integrations
+
+Currently, only the Fonts.com service is integrated.  However, the
+extension is open to integration with other services.
+
+*** General Component Integration
+
+Generally, the extension can be extended by building according to
+Joomla's MVC architecture.  Accordingly, each new service will need a
+model, view, and sub-controller.  This will manage the font vendor's
+area within the component.
+
+*** Key Component Classes
+
+**** models/stylesheet.php
+
+The stylesheet is where fonts are loaded and selectors assigned.  The
+stylesheet model acts as a higher level notifier and passes
+appropriate information to other models in order to complete
+font-specific tasks for the service being written for.  The vendor
+needs to have it's name in the protected property, "vendors," in order
+to initiate appropriate actions.   Additionally, though no formal
+interface has been defined, the vendor model needs to support the
+method signatures that the stylesheet model calls.
+
+In this manner, each vendor can complete the necessary actions on its
+fonts for the Web Fonts component.
+
+**** helpers/fonts.php
+
+When the stylesheet model requests a list of fonts from a vendor, it
+needs to be returned in an array of objects according to the inteface
+"StylesheetFontWrapper", defined in this file.  This allows the
+stylesheet view to properly display the font and its properties if
+they exist.
+
+*** Key Component Schema Information
+
+Each vendor has an id, name, and properties field in the
+#__webfonts_vendors table.  Additional vendors need to be updated in
+the install.sql file to insert this data.
+
+The properties field is intended to hold json encoded metadata about
+the vendor (e.g. username information, keys, etc).
+
+The #__webfonts table holds information about fonts selected for the
+project and maps it to vendors individual tables.
+
+*** Key Plugin Information
+
+The Web Fonts plugin is a container for other Web Fonts plugins.  It
+currently only triggers the onBeforeCompileHead event, however it is
+generic enough to support any other system events.
+
+Individual actions for those events need to be inserted in the
+"handlers" directory and will be triggered by the main plugin via the
+"execute" method.
