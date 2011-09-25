@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.0" type="plugin" group="system" method="upgrade">
+  <name>PLG_WEBFONTS</name>
+  <creationDate>September 2011</creationDate>
+  <author>Blue Bridge Development</author>
+  <authorEmail>john@bluebridgedev.com</authorEmail>
+  <authorUrl>http://www.bluebridgedev.com</authorUrl>
+  <copyright>(C) 2011 Copyright Monotype Imaging</copyright>
+  <license>GPL Version 2 or Newer</license>
+  <version>1.0</version>
+  <description>PLG_WEBFONTS_DESCRIPTION</description>
+  <files>
+    <filename plugin="webfonts">webfonts.php</filename>
+    <folder>handlers</folder>
+    <folder>language</folder>
+  </files>
+</extension>

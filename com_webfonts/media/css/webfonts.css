@@ -1,0 +1,247 @@
+.greyed {
+    color: #ccc;
+}
+
+div.beverlyClearly {
+    height: 1px;
+    width: 100%;
+    clear: both;
+    padding: 10px 0;
+}
+
+div.beverlyClearly.ramona {
+    padding: 5px 0;
+}
+/*
+div.icon-48-fontface {
+    background: url('../images/FFSampleIcon.png') 0 0 no-repeat;
+}
+*/
+div.hidden {
+    display: none;
+}
+
+div.column {
+    width: 45%;
+    float: left;
+    margin-right: 2.4%;
+}
+
+.fieldList {
+    margin: 0;
+    padding: 0;
+}
+
+.fieldList li {
+    margin: 5px 0;
+    list-style: none;
+}
+
+.fieldList input {
+    float: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.error, .invalid, #webFonts label.invalid {
+    font-weight: bold;
+    color: red;
+}
+
+.important {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #0a71a5;
+}
+
+div.notice {
+    box-shadow: 0 0 10px #ccc;
+    border: 1px solid #666;
+    padding: 3px 15px;
+    margin:  5px 0px;
+    width: 300px;
+    background: #fff;
+}
+
+div.notice p {
+    margin-left: 0;
+}
+
+.notice a, .notice a:visited {
+    color: #000;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+#fontFace div#submenu-box div.t {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: url("templates/bluestork/images/j_border.png");
+    background-origin: padding-box;
+    background-position: 0px 0px;
+    background-repeat: repeat-x;
+    background-size: auto;
+}
+
+.fontPreview {
+    font-size: 22px;
+}
+
+.fontPreview, h3.fontTitle {
+    color: rgb(102, 102, 102);
+}
+
+div.fontSelectList {
+    width: 96%;
+    margin: 20px auto 20px;
+    border: 1px solid #dcdcdc;
+    padding: 10px;
+    box-shadow: 0 0 10px #ccc;
+}
+
+.center {
+    text-align: center;
+}
+
+td.center input {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    float: none;
+}
+
+input.fallBack {
+    width: 270px;
+}
+
+.fontSelectList label {
+    width: 100%;
+    display: block;
+    float: left;
+    margin-top: 8px;
+    min-width: 150px;
+    clear: both;
+    color: rgb(102, 102, 102);
+    font-size: 1.1em;
+    font-weight: 700;
+ }
+
+.fontSelectList input {
+    margin-top: 0;
+    margin-left: 5px;
+    float: left;
+}
+
+th.fontBasedRemove {
+    width: 200px;
+}
+
+/* Webfonts */
+
+#webFonts p {
+    margin-left: 0;
+}
+
+#webFonts label, #webFonts span.label, .darkGreyed {
+    width: 100%;
+    clear: both;
+    color: #666;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+#webFonts div.current input {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+#manageProjects {
+    width: 500px;
+}
+
+#domainList li input.domain {
+    width: 200px;
+}
+
+#domainList li input {
+    float: none;
+}
+
+span#createEmailError {
+    padding-left: 5px;
+}
+
+.fonts td {
+    text-align: center;
+}
+
+.fontSample {
+    font-size: 3em;
+}
+
+.fontSample.long {
+    font-size: 2em;
+}
+
+.fontLabel {
+    font-size: 1em;
+}
+
+.fontLabelLanguage {
+    font-size: .9em;
+}
+
+td.fontTile.activeTile {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    background: #efefef;
+    cursor: pointer;
+    cursor: hand;
+}
+
+td.fontTile.selected {
+    background: #efefef;
+}
+
+p.longExample {
+    background: #dcdcdc;
+    padding: 5px;
+    text-align: center;
+    font-size: 2em;
+}
+
+p.longExample.invert {
+    color: #fff;
+    background: #333;
+}
+
+#webFonts .m label, #webFonts .m div.current label {
+    width: auto;
+    clear: none;
+    color: #666;
+    font-size: 1.09em;
+    font-weight: normal;
+    min-width: 0;
+    margin-top: 3px;
+}
+
+#webFonts .m button {
+    margin-top: 3px;
+}
+
+#webFonts #resetForm {
+    font-size: 1.1em;
+    box-shadow: 0 0 5px #ccc;
+}
+
+a.commercialLink {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 1.1em;
+}
