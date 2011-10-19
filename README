@@ -58,6 +58,12 @@ method signatures that the stylesheet model calls.
 In this manner, each vendor can complete the necessary actions on its
 fonts for the Web Fonts component.
 
+**** views/vendors/view.html.php
+
+This view needs to have the primary key of the new service mapped to a
+value that represents the view to use for that service.  This is done
+by adding the key => value to the protected property $_views.
+
 **** helpers/fonts.php
 
 When the stylesheet model requests a list of fonts from a vendor, it
