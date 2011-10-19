@@ -5,7 +5,7 @@ defined('_JEXEC') or die('Access Restricted');
 jimport('joomla.application.component.controller');
 
 $cbase = dirname(__FILE__);
-JLoader::register('FF\ServiceDecorator', $cbase . '/helpers/ServiceDecorator.php');
+JLoader::register('WFServiceDecorator', $cbase . '/helpers/ServiceDecorator.php');
 JLoader::register('Services_WFS', $cbase . '/helpers/Services_WFS.php');
 JLoader::register('GenericValidationFacade', $cbase . '/helpers/validators.php');
 JLoader::register('ResponseFontscom', $cbase . '/helpers/responses.php');

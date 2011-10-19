@@ -16,7 +16,7 @@ class WebfontsModelFontscom extends JModelList {
   public function __construct($config = array()){
     parent::__construct($config);
     $this->_table = (array_key_exists('table', $config)) ? $config['table'] : $this->_getWebFontVendorInfo();
-    $this->_service = (array_key_exists('service',$config)) ? $config['service'] : new FF\ServiceDecorator($this->_table->properties);
+    $this->_service = (array_key_exists('service',$config)) ? $config['service'] : new WFServiceDecorator($this->_table->properties);
   }
 
   public function newAccount($post){

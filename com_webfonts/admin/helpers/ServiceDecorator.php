@@ -1,10 +1,8 @@
 <?php
 
-namespace FF;
-
 defined ('_JEXEC') or die();
 
-class ServiceDecorator extends \Services_WFS{
+class WFServiceDecorator extends Services_WFS{
 
   public function __construct($properties){
     parent::__construct();
