@@ -194,6 +194,10 @@ span#createEmailError {
     font-size: .9em;
 }
 
+table.adminlist.fonts tr td {
+    width: 19%;
+}
+
 td.fontTile.activeTile {
     border-top: 1px solid #ccc;
     border-left: 1px solid #ccc;
