@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS `#__webfonts_vendor` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;
 
 INSERT INTO `#__webfonts_vendor` (`id`, `name`, `properties`) VALUES 
-(1, 'Fonts.com', '{"account":{"email":"","firstName":"","lastName":""},"key":"","designers":{},"foundries":{},"classifications":{},"languages":{},"wfspid":""}'),
-(2, 'Google Web Fonts', '{"hash":""}');
+(1, 'Fonts.com', '{"account":{"email":"","firstName":"","lastName":""},"key":"","designers":{},"foundries":{},"classifications":{},"languages":{},"wfspid":""}');
 
 CREATE TABLE IF NOT EXISTS `#__webfonts_fontscom` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -28,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `#__webfonts_fontscom` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 
-CREATE TABLE `#__webfonts_google` (
+CREATE TABLE IF NOT EXISTS `#__webfonts_google` (
 `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 `kind` VARCHAR( 100 ) NOT NULL ,
 `name` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,

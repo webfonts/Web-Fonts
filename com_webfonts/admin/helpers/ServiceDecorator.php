@@ -84,7 +84,7 @@ class WFServiceDecorator extends Services_WFS{
     if($free) $query .= '&wfsFree=' . urlencode($free);
     if($alphabet) $query .= '&wfsAlphabet=' . urlencode($alphabet);
     $query .= ($limitStart) ? '&wfspstart=' . $limitStart : '&wfspstart=0';
-    $query .= ($limit) ? '&wfsplimit=' . $limit : '&wfsplimit=25';
+    $query .= ($limit) ? '&wfsplimit=' . $limit : '&wfsplimit=15';
     $query = $base . substr($query, 1);
     return $this->wfs_getInfo_post('', $query);
   }

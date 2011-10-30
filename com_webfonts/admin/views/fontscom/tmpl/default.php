@@ -339,7 +339,7 @@ $count = count($this->fonts);
 
 <?php endif; //End have we selected a project ?>
 
-<input type="hidden" name="limit" id="realLimit" value="25" />
+<input type="hidden" name="limit" id="realLimit" value="15" />
 <input type="hidden" name="option" value="com_webfonts" />
 <input type="hidden" name="view" value="fontscom" />
 <input type="hidden" name="editingFonts" value="1" />

@@ -1,7 +1,8 @@
 <?php
 
-	define('ROOT_URL', "%%apiLocation%%");
-        define('APPKEY', "%%apiKey%%");
+	define('ROOT_URL', "https://api.fonts.com");
+        define('APPKEY', "693c8014-ddb8-4282-883e-551b375a2ddb1090995");
+
 	define('MAIN_API_URL',"/rest/");
 
 	define('PROJECTS', "Projects/");
@@ -151,6 +152,7 @@ class Services_WFS{
 			$arr[MESSAGE] = $message;
 			if($message == SUCCESS){
 				//follow the path given as a parameter (e.g. Projects->Project)	
+			  if((!property_exists($doc, $path[0])) || (!property_exists($doc->$path[0], $path[1]))) return $arr;
 				foreach($doc->$path[0]->$path[1] as $e){
 					//for each object, extract the values requested in parameters (e.g. ProjectName, ProjectKey)
 					if(is_object($e)){		
@@ -224,7 +226,8 @@ class Services_WFS{
 	* @return an associative array of project name => project key -value pairs or xml/json if completeResponses is true
 	**/
 	function listProjects(){
-		$returnMsg = $this->wfs_getInfo_post("", PROJECTS);	
+	  $limit = ($this->wfspParams) ? '?' . substr($this->wfspParams, 1) : '';
+	  $returnMsg = $this->wfs_getInfo_post("", PROJECTS . $limit);	
     
 		//return whole xml/json and do nothing else?
 		if($this->completeResponses){

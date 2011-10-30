@@ -2,28 +2,48 @@
 
 defined ('_JEXEC') or die();
 
-class PluginWebfontsFontscom implements PluginWebfonts {
+class PluginWebfontsFontscom {
 
-  public function execute(){
+  protected $_key = false;
+  protected $_isAdmin = null;
+
+  public function onBeforeCompileHead(){
     if($this->_isAdmin()) return;
     $key = $this->_getActiveProject();
     if(!$key) return false;
     $doc = JFactory::getDocument();
-    $doc->addScript("http://fast.fonts.com/jsapi/{$key}.js");
     $fallBack = $this->_buildFallbackDeclarations($key);
     if($fallBack) $doc->addStyledeclaration($fallBack);
   }
 
+  /* Has to be last line in Head element to override equivalent styles */
+  public function onAfterRender(){
+    if($this->_isAdmin()) return;
+    $response = JResponse::getBody();
+    $key = $this->_getActiveProject();
+    if(!$key) return false;
+    $link = "<script type=\"text/javascript\" src=\"http://fast.fonts.com/jsapi/{$key}.js\"></script>";
+    $link .= "<!-- Fonts.com CDN call -->" . PHP_EOL . "</head>";
+    // Manipulating this causes the event to be called again, so we do a check here
+    if(strpos($response, '<!-- Fonts.com CDN call -->') > 0) return;
+    $response = str_ireplace('</head>', $link, $response);
+    JResponse::setBody($response);
+  }
+
   protected function _isAdmin(){
-    $user = JFactory::getUser();
-    return in_array('8', $user->getAuthorisedGroups());
+    if($this->_isAdmin !== null) return $this->_isAdmin;
+    $app =& JFactory::getApplication();
+    $this->_isAdmin = $app->isAdmin();
+    return $this->_isAdmin;
   }
 
   protected function _getActiveProject(){
     $db = JFactory::getDBO();
     $key = $this->_getProjectKey($db);
-    if($this->_projectHasFonts($db, $key)) return $key;
-    return false;
+    if($this->_projectHasFonts($db, $key)) {
+      $this->_key = $key;
+    }
+    return $this->_key;
   }
 
   protected function _getProjectKey(&$db){

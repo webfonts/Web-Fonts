@@ -4,23 +4,31 @@ defined ('_JEXEC') or die();
 
 jimport('joomla.event.plugin');
 
+/* 
+   This class essentially dispatches the same system events 
+   to multiple Web Fonts vendor specific implementations in 
+   the handlers folder 
+*/
+
 class plgSystemWebfonts extends JPlugin {
 
-  protected $_onBeforeCompileHead = array('fontscom.php' => 'fontscom'); 
+  protected $_onBeforeCompileHead = array('fontscom.php' => 'fontscom');
+  protected $_onAfterRender = array('fontscom.php' => 'fontscom'); 
   protected $_active = array();
-
-  /* Othersystem events can be initiated by creating a method
-     signature mapped to the desired files in the same manner as this
-     one */
 
   public function onBeforeCompileHead(){
     $this->_initHandlers('_onBeforeCompileHead');
-    $this->_fireActive();
+    $this->_fireActive('onBeforeCompileHead');
   }
 
-  protected function _fireActive(){
+  public function onAfterRender(){
+    $this->_initHandlers('_onAfterRender');
+    $this->_fireActive('onAfterRender');
+  }
+
+  protected function _fireActive($evt){
     foreach($this->_active as $plugin){
-      $plugin->execute();
+      $plugin->$evt();
     }
   }
 
@@ -29,16 +37,9 @@ class plgSystemWebfonts extends JPlugin {
       if(file_exists(dirname(__FILE__) . "/handlers/$filename")){
 	include_once(dirname(__FILE__) . "/handlers/$filename");
 	$className = 'PluginWebfonts' . ucfirst($handler);
-	if(class_exists($className)) $this->_active[] = new $className;
+	if(class_exists($className)) $this->_active[] = new $className();
       }
     }
   }
-
-}
-
-
-interface PluginWebfonts {
-
-  public function execute();
 
 }

@@ -81,6 +81,7 @@ class WebfontsModelFontscom extends JModelList {
 
   public function getProjects(){
     if(!$this->_table->properties->key) return false;
+    $this->_service->setWfspParams('0','50');
     $projects = json_decode($this->_service->listProjects());
     if((!property_exists($projects, 'Projects')) || ($projects->Projects->Message !== 'Success')) return false;
     return $projects->Projects;
@@ -96,6 +97,7 @@ class WebfontsModelFontscom extends JModelList {
     $this->_service->setProjectKey($wfspid);
     $domains = json_decode($this->_service->listDomains());
     if((!property_exists($domains, 'Domains')) || ($domains->Domains->Message !== 'Success')) return false;
+    if(!property_exists($domains->Domains, 'Domain')) return false;
     return (!is_array($domains->Domains->Domain)) ? array($domains->Domains->Domain) : $domains->Domains->Domain;
   }
 
@@ -136,7 +138,7 @@ class WebfontsModelFontscom extends JModelList {
   }
 
   protected function _saveDomains(&$domains){
-    if(empty($domains)) return;
+    if(!is_array($domains)) return;
     $current = $this->getDomains();
     $this->_processForWWWorHttp($domains);
     $response = $this->_saveNewDomains($domains);
@@ -257,7 +259,7 @@ class WebfontsModelFontscom extends JModelList {
 				     'AllFonts');
     if($response->wasSuccessful()) {
       $this->_totalResults = $response->TotalRecords;
-      return $response->Font;
+      return (is_array($response->Font)) ? $response->Font : array($response->Font);
     }
     return false;
   }
@@ -271,7 +273,7 @@ class WebfontsModelFontscom extends JModelList {
 			       'keyword' => JRequest::getVar('keyword', '', 'post'),
 			       'alphabet' => JRequest::getVar('alphabet', 'All', 'post'),
 			       'free' => 'all',
-			       'limit' => 25,
+			       'limit' => 15,
 			       'limitStart' => $this->getState('list.start'));
     return $this->_fontSearch;
   }
