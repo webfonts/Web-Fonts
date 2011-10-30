@@ -6,8 +6,8 @@
   <authorEmail>info@bluebridgedev.com</authorEmail>
   <authorUrl>http://www.bluebridgedev.com</authorUrl>
   <copyright>Copyright Monotype Imaging</copyright>
-  <license>GPL Version 2 or Newer</license>
-  <version>%%version%%</version>
+  <license>GPL Version 3 or Newer</license>
+  <version>1.0</version>
   <description><![CDATA[WEBFONTS_INSTALL]]></description>
   <menu>COM_WEBFONTS</menu>
   <files>
