@@ -1,4 +1,7 @@
-<?php
+<?php 
+/*-----------------------------------------
+  License: GPL v 3.0 or later
+-----------------------------------------*/
 
 /* License: These generic validation classes are public domain */
 

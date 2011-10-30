@@ -1,3 +1,10 @@
+<?php 
+/*-----------------------------------------
+  License: GPL v 3.0 or later
+-----------------------------------------*/
+
+ defined('_JEXEC') or die; 
+ ?>
 <form name="adminForm" id="adminForm" action="index.php" method="POST">
 
 <?php if(empty($this->vendors)): ?>

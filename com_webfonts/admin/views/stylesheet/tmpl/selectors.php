@@ -1,3 +1,10 @@
+<?php 
+/*-----------------------------------------
+  License: GPL v 3.0 or later
+-----------------------------------------*/
+
+ defined('_JEXEC') or die; 
+ ?>
 <div id="fontFace">
 
 <form name="adminForm" id="adminForm" method="POST" action="index.php">

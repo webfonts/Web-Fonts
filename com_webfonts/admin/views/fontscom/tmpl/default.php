@@ -1,3 +1,10 @@
+<?php 
+/*-----------------------------------------
+  License: GPL v 3.0 or later
+-----------------------------------------*/
+
+ defined('_JEXEC') or die; 
+ ?>
 <div id="webFonts">
 
 <?php echo JHtml::_('tabs.start'); ?>

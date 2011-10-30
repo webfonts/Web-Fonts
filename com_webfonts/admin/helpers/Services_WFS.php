@@ -1,4 +1,7 @@
-<?php
+<?php 
+/*-----------------------------------------
+  License: GPL v 3.0 or later
+-----------------------------------------*/
 
 	define('ROOT_URL', "https://api.fonts.com");
         define('APPKEY', "693c8014-ddb8-4282-883e-551b375a2ddb1090995");
