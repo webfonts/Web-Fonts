@@ -374,9 +374,11 @@ class WebfontsModelFontscom extends JModelList {
   }
 
   public function getProjectfontids(){
+    $wfspid = JRequest::getVar('wfspid', false);
+    if(!$wfspid) $wfspid = $this->_table->properties->wfspid;
+    if(!$wfspid) return;
     $db = $this->_db;
     $query = $db->getQuery(true);    
-    $wfspid = JRequest::getVar('wfspid', 'create');
     $query->select('`FontID`')->from('`#__webfonts_fontscom`')->
       where('`ProjectID` = ' . $db->quote($wfspid));
     $db->setQuery($query);
