@@ -467,6 +467,7 @@ class WebfontsModelFontscom extends JModelList {
     $response = new ResponseFontscom($this->_service->listSelectors(),
 				     array(),
 				     'Selectors');
+    if($response->Selector === false) return false;
     return (is_array($response->Selector)) ? $response->Selector : array($response->Selector);
   }
   
