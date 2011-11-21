@@ -109,15 +109,6 @@ class WebfontsViewFontscom extends JView {
     return JRequest::getInt('editingFonts', 0);
   }
 
-  protected function _outputAlphabetFilters(){
-    $current = JRequest::getVar('alphabet', 'All', 'post');
-    $letters = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','V','W','X','Y','Z');
-    foreach($letters as $letter){
-      $selected = ($current === strtolower($letter)) ? ' selected="selected"' : '';
-      echo '"<option value="' . strtolower($letter) . "\"{$selected}>{$letter}</option>";
-    }
-  }
-
   protected function _isFontAlreadyOnThisProject($FontID){
     return in_array($FontID, $this->currentFonts);
   }

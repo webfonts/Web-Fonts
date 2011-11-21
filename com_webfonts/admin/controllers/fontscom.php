@@ -77,9 +77,8 @@ class WebfontsControllerFontscom extends JController {
     $post = JRequest::get('post');
     $wfspid = $post['wfspid'];
     $wfsfid = $post['wfsfid'];
-    $fonturls = array_key_exists($wfsfid, $post['fonturls']) ? $post['fonturls'][$wfsfid] : null;
     try {
-      if(!$wf->$method($wfspid, $wfsfid, $fonturls)) {
+      if(!$wf->$method($wfspid, $wfsfid)) {
 	$app = JFactory::getApplication();
 	$app->enqueueMessage(array_pop($wf->getErrors()), 'error');
       }

@@ -52,10 +52,7 @@
    <?php echo $selector->selector; ?>
   </td>
   <td>
-    <select name="selectors[]" id="fontSelector">
-    <option><?php echo JText::_('SELECT_FONT'); ?></option>
-   <?php $this->_listOptions($selector->fontId, $selector->id) ?>
-    </select>
+    <?php echo $this->_listOptions($selector->fontId, $selector->id) ?>
   </td>
   <td class="fontPreview">
     <?php echo $this->_getFontPreview($selector->fontId, $selector->vendor); ?>

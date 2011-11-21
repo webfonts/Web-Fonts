@@ -7,8 +7,6 @@ CREATE TABLE IF NOT EXISTS `#__webfonts` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
 
-DROP TABLE IF EXISTS `#__webfonts_vendor`;
-
 CREATE TABLE IF NOT EXISTS `#__webfonts_vendor` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -17,15 +15,18 @@ CREATE TABLE IF NOT EXISTS `#__webfonts_vendor` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0;
 
 INSERT INTO `#__webfonts_vendor` (`id`, `name`, `properties`) VALUES 
-(1, 'Fonts.com', '{"account":{"email":"","firstName":"","lastName":""},"key":"","designers":{},"foundries":{},"classifications":{},"languages":{},"wfspid":""}');
+(1, 'Fonts.com', '{"account":{"email":"","firstName":"","lastName":""},"key":"","designers":{},"foundries":{},"classifications":{},"languages":{},"wfspid":""}'),
+(2, 'Google Web Fonts', '{"hash":""}');
 
 CREATE TABLE IF NOT EXISTS `#__webfonts_fontscom` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ProjectID` varchar(150) NOT NULL,
   `FontID` int(11) NOT NULL,
-  `font` text CHARACTER SET utf8 NOT NULL COMMENT 'json encoded font info',
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `family` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `preview` varchar(120) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=0 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8_unicode_ci AUTO_INCREMENT=0 ;
 
 CREATE TABLE IF NOT EXISTS `#__webfonts_google` (
 `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,

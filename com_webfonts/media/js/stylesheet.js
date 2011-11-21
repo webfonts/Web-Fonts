@@ -1,6 +1,9 @@
 window.addEvent('domready', function(){
 
     var selectorBasedLayout = function(){
+
+	var taskAssigned = 0;
+
 	var task = function(task){
 	    $('task').setProperty('value', task);
 	}
@@ -18,8 +21,13 @@ window.addEvent('domready', function(){
 	    }
 	});
 	
-	$('fontSelector').addEvent('change', function(){
-	    task('stylesheet.assignFont');
+	$$('.fontSelector').each(function(el){
+	    el.addEvent('change', function(){
+		if(taskAssigned === 0){
+	            task('stylesheet.assignFont');
+		    taskAssigned = 1;
+		}
+	    });
 	});
 	
 	$('saveChanges').addEvent('click', function(){
@@ -100,4 +108,11 @@ function removeSelector(id){
     $('sid').setProperty('value', id);
     $('task').setProperty('value', 'stylesheet.removeSelector');
     $('adminForm').submit();
+}
+
+function removeFont(id, vendor){
+    var question = $('confirmDelete').innerHTML;
+    if(confirm(question)){
+	window.location = 'index.php?option=com_webfonts&task=stylesheet.removeFont&font=' + id + '&vendor=' + vendor;
+    }
 }

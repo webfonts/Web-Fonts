@@ -16,6 +16,7 @@ class WFServiceDecorator extends Services_WFS{
 
   protected function _wfs_getInfo_post($method = "", $uriEnding = ''){
     $curlurl = ROOT_URL.MAIN_API_URL.$this->uri.$uriEnding;
+    if($method === '') $curlurl .= '&wfsnopublish=1';
     $data="";
     $finalHeader = $this->public_key.":".$this->sign(MAIN_API_URL.$this->uri . $uriEnding, $this->public_key, $this->private_key);
     $ch = curl_init();
@@ -71,7 +72,9 @@ class WFServiceDecorator extends Services_WFS{
 
   public function editProjectName($wfspid, $newName){
     $this->curlPost = 'wfsproject_name=' . $newName;
-    return $this->wfs_getInfo_post("update", 'Projects/?wfspid=' . urlencode($wfspid));
+    $request = 'Projects/?wfspid=' . urlencode($wfspid);
+    $request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
+    return $this->wfs_getInfo_post("update", $request);
   }
 
   // This mis-spelling for Foundry is on the API
@@ -84,7 +87,7 @@ class WFServiceDecorator extends Services_WFS{
     if($foundry) $query .= '&wfsFountryId=' . urlencode($foundry);
     if($language) $query .= '&wfsLangId=' . urlencode($language);
     if($keyword) $query .= '&wfsKeyword=' . urlencode($keyword);
-    if($free) $query .= '&wfsFree=' . urlencode($free);
+    if($free === '0') $query .= '&wfsfree=true';
     if($alphabet) $query .= '&wfsAlphabet=' . urlencode($alphabet);
     $query .= ($limitStart) ? '&wfspstart=' . $limitStart : '&wfspstart=0';
     $query .= ($limit) ? '&wfsplimit=' . $limit : '&wfsplimit=15';
@@ -106,23 +109,44 @@ class WFServiceDecorator extends Services_WFS{
     return $this->wfs_getInfo_post('', 'FilterValues/?wfsfiltertype=' . $type . $query);
   }
 
+  public function getFilteredFilters($args){
+    extract($args);
+    $query = '';
+    if($classification) $query .= '&wfsclassificationid=' . urlencode($classification);
+    if($designer) $query .= '&wfsdesignerid=' . urlencode($designer);
+    if($foundry) $query .= '&wfsfoundryid=' . urlencode($foundry);
+    if($language) $query .= '&wfslanguageid=' . urlencode($language);
+    if($free === '0') $query .= '&wfsfreeorpaid=0';
+    if($alphabet) $query .= '&wfsalphachar=' . urlencode($alphabet);
+    $query = ($query !== '') ? '?' . substr($query, 1) : '';
+    return $this->wfs_getInfo_post('', 'AllFilterValues/' . $query);
+  }
+
   public function addFont($wfspid, $wfsfid){
     $this->curlPost = 'wfsfid=' . urlencode($wfsfid);
-    return $this->wfs_getInfo_post("create", 'Fonts/?wfspid=' . urlencode($wfspid));
+    $request = 'Fonts/?wfspid=' . urlencode($wfspid);
+    $request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
+    return $this->wfs_getInfo_post("create", $request);
   }
 
   public function removeFont($wfspid, $wfsfid){
-    return $this->wfs_getInfo_post("delete", 'Fonts/?wfspid=' . urlencode($wfspid) . '&wfsfid=' . urlencode($wfsfid));
+    $request = 'Fonts/?wfspid=' . urlencode($wfspid) . '&wfsfid=' . urlencode($wfsfid);
+    $request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
+    return $this->wfs_getInfo_post("delete", $request);
   }
   
   public function addSelector($selector){
     $this->curlPost = 'wfsselector_tag=' . urlencode($selector);
-    return $this->wfs_getInfo_post('create', 'Selectors/?wfspid=' . $this->wfspid);
+    $request = 'Selectors/?wfspid=' . $this->wfspid;
+    $request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';    
+    return $this->wfs_getInfo_post('create', $request);
   }
 
   public function updateSelector($SelectorID, $newFont){
     $this->curlPost = 'wfsselector_ids=' . $SelectorID . '&wfsfont_ids=' . $newFont;
-    return $this->wfs_getInfo_post('update', 'Selectors/?wfspid=' . $this->wfspid);
+    $request = 'Selectors/?wfspid=' . $this->wfspid;
+    $request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
+    return $this->wfs_getInfo_post('update', $request);
   }
 
   public function publish(){

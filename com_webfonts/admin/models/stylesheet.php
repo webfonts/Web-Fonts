@@ -14,6 +14,7 @@ class WebfontsModelStylesheet extends JModel {
   public function __construct($config = array()){
     parent::__construct($config);
     $this->_vendors['fontscom'] = new WebfontsModelFontscom;
+    $this->_vendors['google'] = new WebfontsModelGoogle;
   }
 
   public function getFonts(){
@@ -80,9 +81,11 @@ class WebfontsModelStylesheet extends JModel {
     return true;
   }
 
+  /* sort of ugly return format, might want to clean this up */
   protected function _compileSelectors($selectors){
     $new = array();
     foreach($selectors as $selector){
+      if($selector === 'none') continue;
       $s = explode('::', $selector);
       $s['selectorId'] = $s[2];
       $s['selector'] = $this->_getSelectorById($s[2]);
@@ -96,6 +99,10 @@ class WebfontsModelStylesheet extends JModel {
   public function updateFallBack($vendor, $fontId, $fallBack){
     if(array_key_exists($vendor, $this->_vendors))
       $this->_vendors[$vendor]->updateFallBackForFont($fontId, $fallBack);
+  }
+
+  public function removeFont($fid, $vendor){
+    return $this->_vendors[$vendor]->removeFontById($fid);
   }
 
   protected function _getSelectorById($id){

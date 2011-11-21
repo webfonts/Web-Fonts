@@ -96,10 +96,11 @@ div.notice p {
 
 div.fontSelectList {
     width: 96%;
-    margin: 20px auto 20px;
+    margin: 25px auto 20px;
     border: 1px solid #dcdcdc;
     padding: 10px;
     box-shadow: 0 0 10px #ccc;
+    background: #fff;
 }
 
 .center {
@@ -135,11 +136,45 @@ input.fallBack {
     float: left;
 }
 
+.fontSelectList fieldset {
+   position: relative;
+}
+
+img.hoverImage {
+    visibility: hidden;
+}
+
+a.remove {
+    background: url(../images/exit-off.png) 0 0 no-repeat;
+    display: block;
+    width: 24px;
+    height: 24px;
+    float: right;
+    position:relative;
+    top: -6px;
+}
+
+a.remove:hover {
+    background: url(../images/exit.png) 0 0 no-repeat;
+}
+
+a.remove img.hoverImage {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+
 th.fontBasedRemove {
     width: 200px;
 }
 
-/* Webfonts */
+p.fontDetails {
+    margin-top: 10px;
+    color: #444;
+}
+
+/* Fontscom */
 
 #webFonts p {
     margin-left: 0;

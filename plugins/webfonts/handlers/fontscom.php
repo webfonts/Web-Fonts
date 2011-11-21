@@ -9,35 +9,27 @@ class PluginWebfontsFontscom {
 
   protected $_key = false;
   protected $_isAdmin = null;
+  protected $_head = null;
 
-  public function onBeforeCompileHead(){
-    if($this->_isAdmin()) return;
-    $key = $this->_getActiveProject();
-    if(!$key) return false;
-    $doc = JFactory::getDocument();
-    $fallBack = $this->_buildFallbackDeclarations($key);
-    if($fallBack) $doc->addStyledeclaration($fallBack);
+  public function __construct(){
+    $this->_head = new WFHeadHelper();
+    $this->_isAdmin = BBJoomlaEnviroUtilities::areWeOnAdminSide();
   }
 
-  /* Has to be last line in Head element to override equivalent styles */
+  public function onBeforeCompileHead(){
+    if($this->_isAdmin) return;
+    $key = $this->_getActiveProject();
+    if(!$key) return false;
+    $this->_insertFallbackDeclarations($key);
+  }
+
   public function onAfterRender(){
-    if($this->_isAdmin()) return;
-    $response = JResponse::getBody();
+    if($this->_isAdmin) return;
     $key = $this->_getActiveProject();
     if(!$key) return false;
     $link = "<script type=\"text/javascript\" src=\"http://fast.fonts.com/jsapi/{$key}.js\"></script>";
-    $link .= "<!-- Fonts.com CDN call -->" . PHP_EOL . "</head>";
-    // Manipulating this causes the event to be called again, so we do a check here
-    if(strpos($response, '<!-- Fonts.com CDN call -->') > 0) return;
-    $response = str_ireplace('</head>', $link, $response);
-    JResponse::setBody($response);
-  }
-
-  protected function _isAdmin(){
-    if($this->_isAdmin !== null) return $this->_isAdmin;
-    $app =& JFactory::getApplication();
-    $this->_isAdmin = $app->isAdmin();
-    return $this->_isAdmin;
+    $commentMarker = "<!-- Web Fonts: Fonts.com -->";
+    $this->_head->insertBeforeClosingTag($link, $commentMarker);
   }
 
   protected function _getActiveProject(){
@@ -68,11 +60,11 @@ class PluginWebfontsFontscom {
     return (empty($results)) ? false : true;
   }
 
-  protected function _buildFallbackDeclarations($key){
+  protected function _insertFallbackDeclarations($key){
     $declarations = $this->_getDeclarationsFromDB($key);
     if(!$declarations || empty($declarations)) return false;
     $this->_encodeFontObjects($declarations);
-    $output = $this->_buildOutStyles($declarations);
+    $output = $this->_addFallBacks($declarations);
     return $output;
   }
 
@@ -88,17 +80,22 @@ class PluginWebfontsFontscom {
     }
   }
 
-  protected function _buildOutStyles($declarations){
-    $buffer = "";
-    $count = 0;
+  protected function _addFallBacks($declarations){
     foreach($declarations as $d){
       if($d->fallBack == '') continue;
-      $count++;
-      $buffer .= PHP_EOL . "body " . $d->selector . " {" . PHP_EOL;
-      $buffer .= "font-family: '" . $d->font->FontCSSName . "', " . $d->fallBack . " !important;" . PHP_EOL;
-      $buffer .= "}" . PHP_EOL;
+      $this->_head->addStyleDeclaration($d->selector, $d->font->FontCSSName, $d->fallBack);
     }
-    return ($count === 0) ? false : $buffer;
+    $this->_head->loadAllStyleDeclarations();
+  }
+
+  public function webfontsStylesheetLoading(){
+    if(!$this->_projectNeedsPublishing()) return;
+    JHtml::_('behavior.mootools');
+    JHtml::script('com_webfonts/fontscom.publish.js', false, true, false, false);
+  }
+
+  protected function _projectNeedsPublishing(){
+    return true;
   }
 
 }

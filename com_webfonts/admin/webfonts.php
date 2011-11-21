@@ -14,8 +14,11 @@ JLoader::register('GenericValidationFacade', $cbase . '/helpers/validators.php')
 JLoader::register('ResponseFontscom', $cbase . '/helpers/responses.php');
 JLoader::register('WebfontsMockResponse', $cbase . '/helpers/responses.php');
 JLoader::register('WebfontsModelFontscom', $cbase . '/models/fontscom.php');
+JLoader::register('WebfontsModelGoogle', $cbase . '/models/google.php');
 JLoader::register('StylesheetFontFontscom', $cbase . '/helpers/fonts.php');
 JLoader::register('StylesheetFontCoordinator', $cbase . '/helpers/fonts.php');
+JLoader::register('WebfontsLanguageSampleLong', $cbase . '/helpers/languages.php');
+JLoader::register('BBRemoteClient', $cbase . '/helpers/RemoteClient.php');
 
 $controller = JController::getInstance('webfonts');
 

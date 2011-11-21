@@ -36,13 +36,20 @@ class WebfontsControllerStylesheet extends JController {
     $fallBack = JRequest::getVar('fallBack', false, 'post');
     $this->_justGiveMeTheParams('updateFallBack', $vendor, $fontId, $fallBack);
   }
-  
+
+  public function removeFont(){
+    $font = JRequest::getVar('font', false, 'get');
+    $vendor = JRequest::getCmd('vendor', false, 'get');
+    $this->_justGiveMeTheParams('removeFont', $font, $vendor);
+  }
+ 
   protected function _justGiveMeTheParams(){
     $style = $this->getModel('stylesheet');
     $error = null;
     $args = func_get_args();
     $method = array_shift($args);
     $result = call_user_func_array(array($style, $method), $args);
+    $msg = null;
     if(!$result) {
       $msg = array_pop($style->getErrors());
       $error = 'error';

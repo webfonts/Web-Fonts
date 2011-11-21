@@ -3,8 +3,8 @@
   License: GPL v 3.0 or later
 -----------------------------------------*/
 
-	define('ROOT_URL', "https://api.fonts.com");
-        define('APPKEY', "693c8014-ddb8-4282-883e-551b375a2ddb1090995");
+	define('ROOT_URL', "%%apiLocation%%");
+        define('APPKEY', "%%apiKey%%");
 
 	define('MAIN_API_URL',"/rest/");
 
@@ -35,7 +35,7 @@ class Services_WFS{
 	protected $api_key = null;
 	// Mine
 	protected $_header = null;
-
+	protected $_autoPublish = false;
 	/**
 	* constructs a new WFS API instance
 	*/
@@ -433,6 +433,7 @@ class Services_WFS{
 			$this->curlPost.='&wfsdomain_name='.$wfs_domain_name;
 		}
 		$request = DOMAINS . "?wfspid=" . $this->wfspid . $this->wfspParams;
+		$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 		$response = $this->wfs_getInfo_post("create", $request);
 		if($this->completeResponses){
 			return $response;
@@ -451,10 +452,12 @@ class Services_WFS{
 		//ID was found, carry on with actual deletion
 		if($domainID != null){
 			$request = DOMAINS ."?wfspid=" . $this->wfspid . "&wfsdomain_id=".urlencode($domainID) . $this->wfspParams;
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 			$response = $this->wfs_getInfo_post("delete", $request);
 		}
 		else{//the domain to be deleted wasn't found. return list of known domains.
 			$request = DOMAINS . "?wfspid=" . $this->wfspid . $this->wfspParams;
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 			$response =  $this->wfs_getInfo_post("", $request);		
 		}
 		if($this->completeResponses){
@@ -478,6 +481,7 @@ class Services_WFS{
 		$request = DOMAINS . "?wfspid=" . $this->wfspid . $this->wfspParams;
 		if(!empty($wfs_domain_id)) {
 			$request.='&wfsdomain_id='.urlencode($wfs_domain_id);
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 		} 
 		$response = $this->wfs_getInfo_post("update", $request);
 		
@@ -548,6 +552,7 @@ class Services_WFS{
 			$this->curlPost.='&wfsselector_tag='.urlencode($wfs_selector_tag);
 		}
 		$request = SELECTORS . "?wfspid=" . $this->wfspid . $this->wfspParams;
+		$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 		$response = $this->wfs_getInfo_post("create", $request);
 		if($this->completeResponses){
 			return $response;
@@ -566,10 +571,12 @@ class Services_WFS{
 		$response = null;
 		if($selectorID != null){
 			$request = SELECTORS ."?wfspid=" . $this->wfspid . "&wfsselector_id=".urlencode($selectorID) . $this->wfspParams;
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 			$response =  $this->wfs_getInfo_post("delete", $request);
 		}
 		else{//the selector to be deleted wasn't found. return list of known selectors.
 			$request = SELECTORS . "?wfspid=" . $this->wfspid . $this->wfspParams;	
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 			$response = $this->wfs_getInfo_post("", $request);
 		}
 		if($this->completeResponses){
@@ -633,6 +640,7 @@ class Services_WFS{
 			$this->curlPost.='&wfsfont_ids='.urlencode($wfs_font_ids);
 			$this->curlPost.='&wfsselector_ids='.urlencode($wfs_selector_ids);
 			$request = SELECTORS . "?wfspid=" . $this->wfspid . $this->wfspParams;
+			$request .= ($this->_autoPublish) ? '' : '&wfsnopublish=1';
 			$response = $this->wfs_getInfo_post("update", $request);		
 		}
 		if($this->completeResponses){

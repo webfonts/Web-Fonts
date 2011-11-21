@@ -7,7 +7,7 @@
   <authorUrl>http://www.bluebridgedev.com</authorUrl>
   <copyright>Copyright Monotype Imaging</copyright>
   <license>GPL Version 3 or Newer</license>
-  <version>1.0</version>
+  <version>%%version%%</version>
   <description><![CDATA[WEBFONTS_INSTALL]]></description>
   <menu>COM_WEBFONTS</menu>
   <files>
@@ -15,30 +15,35 @@
     <filename>webfonts.php</filename>
     <filename>gpl-3.0.txt</filename>
   </files>
-    <media destination="com_webfonts" folder="media">  
-      <folder>css</folder>  
-      <folder>images</folder>  
-      <folder>js</folder>  
-      <file>index.html</file>  
-    </media>
+  <media destination="com_webfonts" folder="media">  
+    <folder>css</folder>  
+    <folder>images</folder>  
+    <folder>js</folder>  
+    <file>index.html</file>  
+  </media>
+  <scriptfile>update.script.php</scriptfile>  
   <install>
     <sql>
-      <file charset="utf8" driver="mysql">install.sql</file>
-    </sql>
+      <file charset="utf8" driver="mysql">sql/install.sql</file>
+    </sql>    
   </install>
   <uninstall>
     <sql>
-      <file charset="utf8" driver="mysql">uninstall.sql</file>
+      <file charset="utf8" driver="mysql">sql/uninstall.sql</file>
     </sql>
   </uninstall>
+  <update>
+    <schemas>
+      <schemapath type="mysql">sql/updates</schemapath>
+    </schemas>
+  </update>
   <administration>
     <menu view="cpanel">COM_WEBFONTS</menu>
     <files folder="admin">
       <filename>index.html</filename>
       <filename>webfonts.php</filename>
       <filename>controller.php</filename>
-      <filename>install.sql</filename>
-      <filename>uninstall.sql</filename>
+      <folder>sql</folder>
       <folder>controllers</folder>
       <folder>views</folder>
       <folder>models</folder>

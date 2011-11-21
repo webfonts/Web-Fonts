@@ -122,7 +122,7 @@ window.addEvent('domready', function(){
     }();
 
     var addFilterEvents = function(){
-	['alphabet', 'foundry', 'language', 'classification', 'designer'].each(function(el){
+	['freeorpaid','alpha', 'foundry', 'language', 'classification', 'designer'].each(function(el){
 	    var item = $(el);
 	    item && item.addEvent('change', function(){
 		var limit = $$('input[name="limitstart"]')[0];
@@ -149,18 +149,18 @@ var validateNew = function(f){
 	 $('createEmailError').removeClass('hidden');
 	 return false;
      }
-}
+};
 
 var addFont = function(wfsfid){
     fontAction(wfsfid, 'fontscom.addFont');
-}
+};
 
 var removeFont = function(wfsfid){
     fontAction(wfsfid, 'fontscom.removeFont');
-}
+};
 
 var fontAction = function(wfsfid, action){
     $('fontFormTask').setProperty('value', action);
     $('wfsfid').setProperty('value', wfsfid);
     $('fontForm').submit();
-}
+};

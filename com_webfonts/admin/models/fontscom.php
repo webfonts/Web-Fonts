@@ -41,8 +41,10 @@ class WebfontsModelFontscom extends JModelList {
 
   public function setProject($wfspid){
     if(!$wfspid) return false;
+    //    if($this->_table->properties->wfspid === $wfspid) return true;
     $this->_table->properties->wfspid = $wfspid;
     $this->_table->store();
+    $this->_syncProjectToAPI();
   }
  
   protected function _getValidatedNewAccount($post){
@@ -115,7 +117,7 @@ class WebfontsModelFontscom extends JModelList {
     if($post['wfspid'] !== 'create') $this->_service->setProjectKey($post['wfspid']);
     $project = $this->_saveProject($post);
     $domainResponse = $this->_saveDomains($post['domains']);
-    $this->_publish();
+    $this->_markNeedsPublishing();
     if($project) return $project;
     if($domainResponse) return $domainResponse;
     throw new Exception("Failed to save project.");
@@ -251,6 +253,7 @@ class WebfontsModelFontscom extends JModelList {
       $properties->classifications = array('lastUpdated' => false, 'classification' => array());
       $properties->languages = array('lastUpdated' => false, 'language' => array());
       $properties->wfspid = null;
+      $properties->published = null;
       $table->properties = $properties;
     }
     return $table;
@@ -262,6 +265,7 @@ class WebfontsModelFontscom extends JModelList {
 				     'AllFonts');
     if($response->wasSuccessful()) {
       $this->_totalResults = $response->TotalRecords;
+      if($response->Font === false) return false;
       return (is_array($response->Font)) ? $response->Font : array($response->Font);
     }
     return false;
@@ -274,20 +278,17 @@ class WebfontsModelFontscom extends JModelList {
 			       'foundry' => JRequest::getInt('foundry', 0, 'post'),
 			       'language' => JRequest::getVar('language', 0, 'post'),
 			       'keyword' => JRequest::getVar('keyword', '', 'post'),
-			       'alphabet' => JRequest::getVar('alphabet', 'All', 'post'),
-			       'free' => 'all',
+			       'alphabet' => JRequest::getVar('alpha', 'All', 'post'),
+			       'free' => JRequest::getVar('freeorpaid', 'all', 'post'),
 			       'limit' => 15,
 			       'limitStart' => $this->getState('list.start'));
     return $this->_fontSearch;
   }
 
   public function getFilters(){
-    return array(
-		 'WF_DESIGNER' => $this->_loadFilters('designer'), 
-		 'WF_CLASSIFICATION' => $this->_loadFilters('classification'), 
-		 'WF_FOUNDRY' => $this->_loadFilters('foundry'), 
-		 'WF_LANGUAGE' => $this->_loadFilters('language')
-		 );
+    return new ResponseFontscom($this->_service->getFilteredFilters($this->_getFontSearchArguments()),
+				array(),
+				'FilterValues');
   }
 
   protected function _loadFilters($type){
@@ -308,7 +309,7 @@ class WebfontsModelFontscom extends JModelList {
     return $this->_totalResults;
   }
 
-  public function addFont($wfspid, $wfsfid, $fonturls){
+  public function addFont($wfspid, $wfsfid){
     if(!$wfspid || !$wfsfid) return $this->_error(JText::_('WF_MISSINGPARAMS_FALTER'));
     $response = new ResponseFontscom($this->_service->addFont($wfspid, $wfsfid),
 				     array('Success' => 'Font added to project',
@@ -316,30 +317,45 @@ class WebfontsModelFontscom extends JModelList {
 					   'PremierFontSelected' => JText::_('WF_PREMIERFONT')),
 				     'Fonts');
     if(!$response->wasSuccessful()) return $this->_error($response->getMessage());
-    $this->_publish();
-    return $this->_saveFontInfo($wfspid, $response, $wfsfid, $fonturls);
+    $fonts = (is_array($response->Font)) ? $response->Font : array($response->Font);
+    $this->_markNeedsPublishing();
+    return $this->_saveFontsNotInList($wfspid, $fonts);
   }
 
-  protected function _saveFontInfo($wfspid, $response, $wfsfid, $fonturls){
-    $fonts = (is_array($response->Font)) ? $response->Font : array($response->Font);
+  protected function _saveFontsNotInList($wfspid, $fonts){
+    $ids =& $this->_getLocalFontIds($wfspid);
     foreach($fonts as $font){
-      if($this->_fontExistsForProject($wfspid, $font->FontID)) continue;
+      if(in_array($font->FontID, $ids)) continue;
       $table = JTable::getInstance('fontscom', 'JTable');
       $table->ProjectID = $wfspid;
       $table->FontID = $font->FontID;
-      $this->_addAssetUrls($font, $wfsfid, $fonturls);
-      $table->font = json_encode($font);
+      $table->name = $font->FontName;
+      $table->family = $font->FontCSSName;
+      $table->preview = $font->FontPreviewTextLong;
       $table->store();
     }
     return true;
   }
 
-  protected function _addAssetUrls(&$font, $wfsfid, $fonturls){
-    if($font->FontID !== $wfsfid) return false;
-    $font->EOTURL = $fonturls['EOT'];
-    $font->WOFFURL = $fonturls['WOFF'];
-    $font->TTFURL = $fonturls['TTF']; 
-    $font->SVGURL = $fonturls['SVG']; 
+  protected function _removeFontsNotInList($wfspid, $fonts){
+    $list = array();
+    foreach($fonts as $font){
+      $list[] = $font->FontID;
+    }
+    $list = implode("','", $list);
+    $query = $this->_db->getQuery(true);
+    $query->delete('#__webfonts_fontscom')->where("`FontID` NOT IN('" . $list . "')");
+    $this->_db->setQuery($query);
+    return $this->_db->query();
+  }
+
+  protected function _getLocalFontIds($wfspid){
+    $db = $this->_db;
+    $query = $db->getQuery(true);
+    $query->select('FontID')->from('#__webfonts_fontscom')->
+      where('`ProjectID` = ' . $db->quote($wfspid));
+    $db->setQuery($query);
+    return $db->loadResultArray();
   }
 
   public function removeFont($wfspid, $wfsfid){
@@ -349,28 +365,31 @@ class WebfontsModelFontscom extends JModelList {
 					   'NotValidFontId' => JText::_('WF_FALTER_INVALIDID')),
 				     'Fonts');
     if(!$response->wasSuccessful()) return $this->_error($response->getMessage());
-    $this->_publish();
-    return $this->_removeFont($wfspid, $response);
+    $this->_markNeedsPublishing();
+    return $this->_removeFont($wfspid, $wfsfid);
   }
 
-  protected function _removeFont($wfspid, $response){
-    $fonts = (is_array($response->Font)) ? $response->Font : array($response->Font);
-    $ids = array();
-    foreach($fonts as $font){
-      $ids[] = $font->FontID;
-    }
-    $query = $this->_db->setQuery("DELETE FROM `#__webfonts_fontscom` WHERE `ProjectID` = " . $this->_db->quote($wfspid) .
-				  " AND `FontID` NOT IN('" . implode("','", $ids) . "')");
+  public function removeFontById($wfsfid){
+    $query = $this->_db->getQuery(true);
+    $query->select('`ProjectID`')->from('`#__webfonts_fontscom`')->where('`FontID` = ' . $this->_db->quote($wfsfid));
+    $this->_db->setQuery($query);
+    $wfspid = $this->_db->loadResult();
+    return $this->removeFont($wfspid, $wfsfid);
+  }
+
+  protected function _removeFont($wfspid, $wfsfid){
+    $this->_unsetSelectors($wfsfid);
+    $this->_db->setQuery("DELETE FROM `#__webfonts_fontscom` WHERE `ProjectID` = " . $this->_db->quote($wfspid) .
+			 " AND `FontID` = " . $this->_db->quote($wfsfid));
     return $this->_db->query();
   }
 
-  protected function _fontExistsForProject($wfspid, $wfsfid){
-    $db = $this->_db;
+  protected function _unsetSelectors($wfsfid){
+    $db =& $this->_db;
     $query = $db->getQuery(true);
-    $query->select('id')->from('#__webfonts_fontscom')->
-      where('`ProjectID` = ' . $db->quote($wfspid) . ' AND `FontID` = ' . $db->quote($wfsfid));
+    $query->update('`#__webfonts`')->set('`fontId` = NULL, `vendor` = NULL')->where("`fontId` = " . $db->quote($wfsfid) . " AND `vendor` = 'fontscom'");
     $db->setQuery($query);
-    return $db->loadResult();
+    return $db->query();
   }
 
   public function getProjectfontids(){
@@ -395,7 +414,6 @@ class WebfontsModelFontscom extends JModelList {
     $fontsWrapped = array();
     if(!$fonts) return $fontsWrapped;
     foreach($fonts as $font){
-      $font->font = json_decode($font->font);
       $fontsWrapped[$font->FontID] = new StylesheetFontFontscom($font);
     }
     return $fontsWrapped;
@@ -420,6 +438,7 @@ class WebfontsModelFontscom extends JModelList {
     $sid = $this->_extractSelectorId($response->Selector, $selector);
     if($response->wasSuccessful() && $sid){
       $response = new ResponseFontscom($this->_service->updateSelector($sid, $wfsfid), array(),'Selectors');
+      $this->_markNeedsPublishing();
       return $response->wasSuccessful();
     }
     $this->setError(JText::_('WF_SELECTORADD_FAIL'));
@@ -435,15 +454,20 @@ class WebfontsModelFontscom extends JModelList {
 
   public function updateSelectors($local, $fallBacks){
     $this->_service->setProjectKey($this->_table->properties->wfspid);
-    $response = new ResponseFontscom($this->_service->listSelectors(),
-				     array(),
-				     'Selectors');
-    $selectors = (is_array($response->Selector)) ? $response->Selector : array($response->Selector);
+    $selectors =& $this->_getProjectSelectors();
     $changes = $this->_checkForChanges($selectors, $local);
     $this->_performSelectorUpdates($changes['update']);
     $this->_performSelectorRemovals($changes['remove']);
     $this->_addMissingSelectors($changes['missing']);
     $this->_updateFallBackFonts($fallBacks);
+    $this->_markNeedsPublishing();
+  }
+
+  protected function _getProjectSelectors(){
+    $response = new ResponseFontscom($this->_service->listSelectors(),
+				     array(),
+				     'Selectors');
+    return (is_array($response->Selector)) ? $response->Selector : array($response->Selector);
   }
   
   protected function _checkForChanges($service, &$local){
@@ -499,36 +523,46 @@ class WebfontsModelFontscom extends JModelList {
       $response = new ResponseFontscom($this->_service->updateSelector($update['SelectorID'], $update['SelectorFontID']),
 				       array(), 'Selectors');
       if($response->wasSuccessful()) {
-	$this->_updateSelector($update['SelectorTag'], $update['SelectorFontID']);
+	$this->_updateSelectorByTag($update['SelectorTag'], $update['SelectorFontID']);
       }
     }
   }
 
-  protected function _updateSelector($selector, $wfsfid){
+  protected function _updateSelectorByTag($selector, $wfsfid){
     $this->_db->setQuery('UPDATE `#__webfonts` SET `fontId` = ' . $this->_db->quote($wfsfid) . ', ' . 
 			 '`vendor` = ' . $this->_db->quote('fontscom') . 
 			 ' WHERE ' .  '`selector` = ' . $this->_db->quote($selector));
     return $this->_db->query();
   }
 
+  protected function _insertSelector($selector, $wfsfid){
+    $wf = JTable::getInstance('webfonts', 'JTable');
+    $wf->selector = $selector;
+    $wf->vendor = 'fontscom';
+    $wf->fontId = $wfsfid;
+    return $wf->store();
+  }
+
   public function removeSelector($selector){
     $this->_service->setProjectKey($this->_table->properties->wfspid);
     $stacked = array(array('SelectorTag' => $selector->selector));
-    return $this->_performSelectorRemovals($stacked);
+    $this->_markNeedsPublishing();
+    return $this->_performSelectorRemovals($stacked, false);
   }
 
-  protected function _performSelectorRemovals($removals){
+  protected function _performSelectorRemovals($removals, $update = true){
     foreach($removals as $selector){
       $response = new ResponseFontscom($this->_service->deleteSelector($selector['SelectorTag']), array(), 'Selectors');
       if($response->wasSuccessful()) {
-	return $this->_removeSelector($selector['SelectorTag']);
+	$tag = $selector['SelectorTag'];
+	if($update){
+	  $this->_db->setQuery("UPDATE `#__webfonts` SET `vendor` = '', `fontId` = '' WHERE `selector` = " . $this->_db->quote($tag) . " AND `vendor` = 'fontscom'");
+	} else {
+	  $this->_db->setQuery("DELETE FROM `#__webfonts` WHERE `selector` = " . $this->_db->quote($tag) . " AND `vendor` = 'fontscom'");
+	}
+	$this->_db->query();
       }
     }
-  }
-
-  protected function _removeSelector($tag){
-    $this->_db->setQuery('DELETE FROM `#__webfonts` WHERE `selector` = ' . $this->_db->quote($tag));
-    return $this->_db->query();
   }
 
   protected function _addMissingSelectors($selectors){
@@ -536,12 +570,18 @@ class WebfontsModelFontscom extends JModelList {
     foreach($selectors as $selector){
       $response = new ResponseFontscom($this->_service->addSelector($selector['selector']->selector), array(), 'Selectors');
       $selReturned = (is_array($response->Selector)) ? $response->Selector : array($response->Selector);
-      if($response->wasSuccessful()) $nowAssignIt[] = array('SelectorID' => $selReturned[0]->SelectorID,
+      if($response->wasSuccessful()) $nowAssignIt[] = array('SelectorID' => $this->_extractSIDByTag($selReturned, $selector['selector']->selector),
 							    'SelectorFontID' => $selector['FontID'],
 							    'SelectorTag' => $selector['selector']->selector);
 
     }
     if(!empty($nowAssignIt)) $this->_performSelectorUpdates($nowAssignIt);
+  }
+
+  protected function _extractSIDByTag($selectors, $tag){
+    foreach($selectors as $sel){
+      if($sel->SelectorTag == $tag) return $sel->SelectorID;
+    }
   }
 
   public function preProcessAvailableSelectors(&$selectors){
@@ -571,16 +611,84 @@ class WebfontsModelFontscom extends JModelList {
     return $db->query();
   }
 
-  protected function _publish(){
+  protected function _markNeedsPublishing(){
+    $this->_initPublished();
+    if($this->_table->properties->published === 0) return;
+    $this->_table->properties->published = 0;
+    $this->_table->store();
+  }
+
+  protected function _initPublished(){
+    if(!property_exists($this->_table->properties, 'published')) $this->_table->properties->published = 0;
+    $this->_table->store();
+  }
+
+  public function publish(){
+    if($this->_table->properties->published === 1) return true;
     $this->_service->setProjectKey($this->_table->properties->wfspid);
     $response = new ResponseFontscom($this->_service->publish(), array(), 'Publish');
-    return $response->wasSuccessful();
+    if(!$response->wasSuccessful()) return false;
+    $this->_table->properties->published = 1;
+    $this->_table->store();
+    return true;
   }
 
   public function gotsErrors(){
     $errors = $this->getErrors();
     if(empty($errors)) return false;
     return true;
+  }
+
+  public function _syncProjectToAPI(){
+    $this->_service->setProjectKey($this->_table->properties->wfspid);
+    $this->_syncSelectorsToAPI();
+    $this->_syncFontsToAPI();  
+    $this->_markNeedsPublishing();
+  }
+
+  protected function _syncFontsToAPI(){
+    $fonts =& $this->_getAPIFontsOnProject();
+    if(!$fonts) return;
+    $this->_saveFontsNotInList($this->_table->properties->wfspid, $fonts);
+    $this->_removeFontsNotInList($this->_table->properties->wfspid, $fonts);
+  }
+
+  protected function _syncSelectorsToAPI(){
+    $this->_blankFontscomSelectors();
+    $selectors =& $this->_getProjectSelectors();
+    if(!$selectors) return;
+    $local = $this->_getLocalSelectorTags();
+    foreach($selectors as $selector){
+      if(in_array($selector->SelectorTag, $local)) {
+	$this->_updateSelectorByTag($selector->SelectorTag, $selector->SelectorFontID);
+      } else {
+	$this->_insertSelector($selector->SelectorTag, $selector->SelectorFontID);
+      }
+    }
+  }
+
+  protected function _getLocalSelectorTags(){
+    $query = $this->_db->getQuery(true);
+    $query->select('`selector`')->from('`#__webfonts`');
+    $this->_db->setQuery($query);
+    return $this->_db->loadResultArray();
+  }
+
+  protected function _blankFontscomSelectors(){
+    $query = $this->_db->getQuery(true);
+    $query->update('`#__webfonts`')->set("`vendor` = NULL, `fontId` = '0'")
+      ->where("`vendor` = 'fontscom'");
+    $this->_db->setQuery($query);
+    return $this->_db->query();
+  }
+
+  protected function _getAPIFontsOnProject(){
+    $response = new ResponseFontscom($this->_service->listFonts(),
+    				     array(),
+    				     'Fonts');
+    if(!$response->wasSuccessful()) return false;
+    if($response->Font === false) return false;
+    return (!is_array($response->Font)) ? array($response->Font) : $response->Font;
   }
 
 }

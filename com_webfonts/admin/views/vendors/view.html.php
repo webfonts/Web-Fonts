@@ -10,7 +10,8 @@ jimport('joomla.application.component.view');
 class WebfontsViewVendors extends JView {
 
   public $vendors = array();
-  protected $_views = array('1' => 'fontscom');
+  protected $_views = array('1' => 'fontscom',
+			    '2' => 'google');
 
   public function display(){
     $this->_initToolbar();

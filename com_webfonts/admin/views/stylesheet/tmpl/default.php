@@ -32,6 +32,16 @@
     <?php echo $font->getName()?> (<?php echo $font->getVendor()?>)
   </legend>
 
+  <a href="javascript:removeFont(<?php echo "'" . $font->getId() . "','" . $font->getHandler() ."'" ?>);" class="remove">
+    <img src="<?php echo JURI::root() ?>media/com_webfonts/images/exit.png" alt="<?php echo JText::_('DELETE') ?>" width="25" height="24" class="hoverImage" />
+  </a>
+
+<?php if($details = $font->getDetails()): ?>
+
+ <p class="fontDetails"><em><?php echo $details; ?></em></p>
+
+<?php endif; ?>
+
   <div class="fontPreview">
     <?php echo $font->getPreview() ?>
   </div>
@@ -92,7 +102,12 @@
 
 
 <?php endforeach; //fonts ?>
+
 <?php endif; // Have we imported fonts ?>
+
+<span class="hidden" id="confirmDelete">
+<?php echo JText::_('WF_DELETE_FONT'); ?>
+</span>
 
 <input type="hidden" name="view" value="stylesheet" />
 <input type="hidden" name="option" value="com_webfonts" />

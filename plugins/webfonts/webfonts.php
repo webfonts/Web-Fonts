@@ -5,6 +5,10 @@
 
 defined ('_JEXEC') or die();
 
+$current = dirname(__FILE__);
+JLoader::register('BBJoomlaEnviroUtilities', $current . '/helpers/utilities.php');
+JLoader::register('WFHeadHelper', $current . '/helpers/head.php');
+
 jimport('joomla.event.plugin');
 
 /* 
@@ -15,8 +19,9 @@ jimport('joomla.event.plugin');
 
 class plgSystemWebfonts extends JPlugin {
 
-  protected $_onBeforeCompileHead = array('fontscom.php' => 'fontscom');
-  protected $_onAfterRender = array('fontscom.php' => 'fontscom'); 
+  protected $_onBeforeCompileHead = array('google.php' => 'google', 'fontscom.php' => 'fontscom');
+  protected $_onAfterRender = array('google.php' => 'google', 'fontscom.php' => 'fontscom'); 
+  protected $_webfontsStylesheetLoading = array('fontscom.php' => 'fontscom');
   protected $_active = array();
 
   public function onBeforeCompileHead(){
@@ -27,6 +32,11 @@ class plgSystemWebfonts extends JPlugin {
   public function onAfterRender(){
     $this->_initHandlers('_onAfterRender');
     $this->_fireActive('onAfterRender');
+  }
+
+  public function webfontsStylesheetLoading(){
+    $this->_initHandlers('_webfontsStylesheetLoading');
+    $this->_fireActive('webfontsStylesheetLoading');
   }
 
   protected function _fireActive($evt){

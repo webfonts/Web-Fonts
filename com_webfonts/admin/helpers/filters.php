@@ -9,25 +9,46 @@ class WebfontsFontscomFilters {
 
   protected $_buffer = '';
   protected $_response = array();
+  protected $_options = array('freeorpaid' => array(),
+			      'alpha' => array(),
+			      'designer' => array(),
+			      'foundry' => array(),
+			      'classification' => array(),
+			      'language' => array());
+  protected $_titles = array('freeorpaid' => 'WF_FREEORCOMMERCIAL',
+			     'alpha' => 'WF_FIRSTLETTER',
+			     'designer' => 'WF_DESIGNER',
+			     'foundry' => 'WF_FOUNDRY',
+			     'classification' => 'WF_CLASSIFICATION',
+			     'language' => 'WF_LANGUAGE');
 
-  public function __construct($responses){
-    $this->_responses = $responses;
+  public function __construct($response){
+    $this->_response =& $response;
   }
 
   protected function _buildFilters(){
-    foreach($this->_responses as $name => $response){
-      if(!is_array($response->FilterValue)) $response->FilterValue = array($response->FilterValue);
-      $filters = $response->FilterValue;
-      if(empty($filters)) continue;
-      $options = array();
-      $options[] = JHtml::_('select.option', '', JText::_($name));
-      foreach($filters as $filter){
-	$options[] = JHtml::_('select.option', $filter->ValueID, $filter->ValueName);
-      }
-      $default = JRequest::getVar($response->FilterName, null);
+    if(empty($this->_response)) return;
+    foreach($this->_response->FilterValue as $filter){
+      $type = strtolower($filter->FilterType);
+      $this->_initOptions($type);
+      $this->_options[$type][] = JHtml::_('select.option', $filter->ValueID, $filter->ValueName);
+    }
+    $this->_buildSelects();
+  }
+
+  protected function _initOptions($type){
+    if(empty($this->_options[$type])) {
+      $this->_options[$type][] = JHtml::_('select.option', '', JText::_($this->_titles[strtolower($type)]));
+    }
+  }
+
+  protected function _buildSelects(){
+    foreach($this->_options as $name => $optionList){
+      if(empty($optionList)) continue;
+      $default = JRequest::getVar($name, null);
       $this->_buffer .= JHtml::_('select.genericlist', 
-				 $options, 
-				 $response->FilterName, 
+				 $optionList, 
+				 $name, 
 				 'class="inputbox"', 
 				 'value', 
 				 'text', 

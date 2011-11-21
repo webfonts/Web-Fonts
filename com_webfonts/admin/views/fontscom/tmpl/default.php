@@ -228,10 +228,6 @@
     <button type="button" onclick="document.id('keyword').value='';this.form.submit();">Clear</button>
   </div>
   <div class="filter-search fltrt">
-    <select name="alphabet" id="alphabet">
-      <option value=""><?php echo JText::_('WF_FIRSTLETTER') ?></option>
-      <?php $this->_outputAlphabetFilters() ?>
-    </select>
    <?php echo $this->filters ?>
   </div>
 </fieldset>
@@ -283,11 +279,6 @@ $count = count($this->fonts);
         </p>
 
 	<?php if(!$this->_isFontAlreadyOnThisProject($font->FontID)): ?>
-
-        <input type="hidden" name="fonturls[<?php echo $font->FontID ?>][EOT]" value="<?php echo $font->EOTURL ?>" />
-        <input type="hidden" name="fonturls[<?php echo $font->FontID ?>][WOFF]" value="<?php echo $font->WOFFURL ?>" />
-        <input type="hidden" name="fonturls[<?php echo $font->FontID ?>][TTF]" value="<?php echo $font->TTFURL ?>" />
-        <input type="hidden" name="fonturls[<?php echo $font->FontID ?>][SVG]" value="<?php echo $font->SVGURL ?>" />
 
   <?php if(($font->FontTier === '0') || $this->_isACommercialProjectAccount()): ?>
 

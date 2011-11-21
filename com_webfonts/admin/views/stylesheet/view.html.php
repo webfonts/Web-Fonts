@@ -11,6 +11,12 @@ class WebfontsViewStylesheet extends JView {
 
   public $fonts = null;
   protected $_coord = null;
+  protected $_dispatcher = null;
+
+  public function __construct($args = array()){
+    parent::__construct($args);
+    $this->_initObserveMe();
+  }
 
   public function display($tpl = null){
    $this->loadHelper('options');
@@ -47,12 +53,18 @@ class WebfontsViewStylesheet extends JView {
     return ($this->fonts && (!empty($this->fonts)));
   }
 
-  protected function _listOptions($selected, $sid){
+  protected function _listOptions($selected, $sid){   
+    $options = array();
+    $options[] = JHtml::_('select.option', 'none', JText::_('SELECT_FONT'));
+    $selectedValue = '';
     foreach($this->fonts AS $font){
-      $option = '<option value="' . $font->getHandler() . '::' . $font->getId() . '::' . $sid . '"';
-      if($selected === $font->getId()) $option .= ' selected="selected"';
-      echo $option . '>' . $font->getName() . '</option>' . PHP_EOL;
+      $option = $font->getHandler() . '::' . $font->getId() . '::' . $sid;
+      $options[] = JHtml::_('select.option', $option, $font->getName());
+      if($font->getId() === $selected) $selectedValue = $option;
     }
+    $selectors = JHtml::_('select.genericlist', $options, 'selectors[]', 'class="inputbox fontSelector"', 'value', 'text', 
+			$selectedValue);
+    return $selectors;
   }
 
   protected function _getFontPreview($id, $vendor){
@@ -75,6 +87,12 @@ class WebfontsViewStylesheet extends JView {
     $std->fallBack = '';
     $std->id = false;
     return array($std);
+  }
+
+  protected function _initObserveMe(){
+    JPluginHelper::importPlugin('system');
+    $this->_dispatcher =& JDispatcher::getInstance();
+    $this->_dispatcher->trigger('webfontsStylesheetLoading');
   }
 
 }
