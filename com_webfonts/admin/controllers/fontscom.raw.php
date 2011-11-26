@@ -10,7 +10,7 @@ jimport('joomla.application.component.controller');
 class WebfontsControllerFontscom extends JController {
 
   public function publish(){
-    $model =& $this->getModel('fontscom');
+    $model = $this->getModel('fontscom');
     if($model->publish()) {
       echo 'Web Fonts: Published.';
     } else {

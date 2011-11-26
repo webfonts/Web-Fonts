@@ -15,7 +15,7 @@ class WebfontsModelWebfonts extends JModel {
 
   public function __construct(){
     parent::__construct();
-    $this->_table =& JTable::getInstance('Webfonts', 'Table');
+    $this->_table = JTable::getInstance('Webfonts', 'Table');
   }
 
 }

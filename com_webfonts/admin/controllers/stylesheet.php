@@ -9,9 +9,9 @@ jimport('joomla.application.component.controller');
 
 class WebfontsControllerStylesheet extends JController {
 
-  public function display(){
+  public function display($cachable = false, $urlparams = false){
     JRequest::setVar('view', 'stylesheet');
-    parent::display();
+    parent::display($cachable, $urlparams);
   }
 
   public function addSelector(){

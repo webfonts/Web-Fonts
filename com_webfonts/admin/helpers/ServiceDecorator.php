@@ -5,7 +5,7 @@
 
 defined ('_JEXEC') or die();
 
-class WFServiceDecorator extends Services_WFS{
+class WFServiceDecorator extends Services_WFS {
 
   public function __construct($properties){
     parent::__construct();
@@ -43,10 +43,11 @@ class WFServiceDecorator extends Services_WFS{
       unset($this->curlPost);
     }
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $this->_thanksWindoze($ch);
     $data=curl_exec($ch);
     curl_close($ch);
     if(trim($data)==""){
-      die("Curl received empty response from server to call: " . $curlurl);
+      throw new Exception("Curl received empty response from server to call: " . $curlurl);
     }
     return $data;
   }
@@ -60,7 +61,8 @@ class WFServiceDecorator extends Services_WFS{
   
   public function getAccountAuthenticationKey($email, $password){
     $this->uri = "json/Accounts/?wfsemail={$email}";
-    $this->_header = array("AppKey: " . $this->api_key, 
+    $this->_header = array('Content-type: text/plain',
+			   "AppKey: " . $this->api_key, 
 			   "Password: " . $password);
     return $this->_wfs_getInfo_post();
   }

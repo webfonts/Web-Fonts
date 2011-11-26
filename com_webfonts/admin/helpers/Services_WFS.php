@@ -3,8 +3,8 @@
   License: GPL v 3.0 or later
 -----------------------------------------*/
 
-	define('ROOT_URL', "%%apiLocation%%");
-        define('APPKEY', "%%apiKey%%");
+	define('ROOT_URL', "https://api.fonts.com");
+        define('APPKEY', "693c8014-ddb8-4282-883e-551b375a2ddb1090995");
 
 	define('MAIN_API_URL',"/rest/");
 
@@ -58,8 +58,11 @@ class Services_WFS{
 		$this->private_key = $privateKey;
 		$this->api_key = $apiKey;
 		//test the validity of the keys by listing projects
-		$result = $this->listInternal("projects");
-		return $result[MESSAGE];
+		if($publicKey && $privateKey){
+		  $result = $this->listInternal("projects");
+
+		  return $result[MESSAGE];
+		}
 	}
 		
 	
@@ -867,7 +870,7 @@ class Services_WFS{
 		curl_setopt($ch, CURLOPT_URL, $curlurl);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: " .
-			urlencode($finalHeader), "AppKey: " . $this->api_key));
+							   urlencode($finalHeader), "AppKey: " . $this->api_key));
 		switch($method){
 			case "create":
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -887,6 +890,7 @@ class Services_WFS{
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curlPost);
 			unset($this->curlPost);
 		}
+		$this->_thanksWindoze($ch);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$data=curl_exec($ch);
 		curl_close($ch);
@@ -899,6 +903,11 @@ class Services_WFS{
 		return $data;
 	}
 	/*end curl*/
+
+	protected function _thanksWindoze(&$ch){
+	  $server = JRequest::getVar('SERVER_SOFTWARE', '', 'server');
+	  if(stripos($server, 'Microsoft') !== false) curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
+	}
 
 	function sign($message, $publicKey, $privateKey){
 		return base64_encode(hash_hmac('md5', $publicKey."|".$message, $privateKey, true));

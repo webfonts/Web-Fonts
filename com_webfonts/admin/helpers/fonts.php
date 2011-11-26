@@ -173,7 +173,7 @@ class StylesheetFontGoogle implements StylesheetFontWrapper {
 
   /* Might save some processor time here by alt approach */
   public function init(){
-    $doc =& JFactory::getDocument();
+    $doc = JFactory::getDocument();
     $headInfo = $doc->getHeadData();
     if(!in_array($this->_stylesheetUri, $headInfo['styleSheets'])) $doc->addStylesheet($this->_stylesheetUri);
   }

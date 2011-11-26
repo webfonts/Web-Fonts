@@ -13,7 +13,7 @@ class WebfontsViewVendors extends JView {
   protected $_views = array('1' => 'fontscom',
 			    '2' => 'google');
 
-  public function display(){
+  public function display($tpl = null){
     $this->_initToolbar();
     $this->_initAssets();
     $this->vendors = $this->get('all');

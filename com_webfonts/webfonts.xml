@@ -7,7 +7,7 @@
   <authorUrl>http://www.bluebridgedev.com</authorUrl>
   <copyright>Copyright Monotype Imaging</copyright>
   <license>GPL Version 3 or Newer</license>
-  <version>%%version%%</version>
+  <version>2.0.1</version>
   <description><![CDATA[WEBFONTS_INSTALL]]></description>
   <menu>COM_WEBFONTS</menu>
   <files>

@@ -22,9 +22,9 @@ class WebfontsViewStylesheet extends JView {
    $this->loadHelper('options');
    $this->loadHelper('styledeclaration'); 
    try {
-      $this->_coord =& $this->get('fonts');
+      $this->_coord = $this->get('fonts');
       $this->fonts = $this->_coord->getFonts();
-      $this->selectors =& $this->get('selectors');
+      $this->selectors = $this->get('selectors');
     } catch(Exception $e){
       $app = JFactory::getApplication();
       $app->enqueueMessage($e->getMessage(), 'error');
@@ -91,7 +91,7 @@ class WebfontsViewStylesheet extends JView {
 
   protected function _initObserveMe(){
     JPluginHelper::importPlugin('system');
-    $this->_dispatcher =& JDispatcher::getInstance();
+    $this->_dispatcher = JDispatcher::getInstance();
     $this->_dispatcher->trigger('webfontsStylesheetLoading');
   }
 

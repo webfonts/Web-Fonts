@@ -20,7 +20,7 @@ class com_webfontsInstallerScript {
   }
 
   protected function _checkForSchemaEntry(){
-    $db =& JFactory::getDBO();
+    $db = JFactory::getDBO();
     $query = $db->getQuery(true);
     $query->select('s.extension_id')->from('`#__schemas` AS s')
       ->innerJoin('`#__extensions` AS x ON s.extension_id = x.extension_id')
@@ -30,7 +30,7 @@ class com_webfontsInstallerScript {
   }
 
   protected function _updateSchemas(){
-    $db =& JFactory::getDBO();
+    $db = JFactory::getDBO();
     $query = $db->getQuery(true);
     $query->select('`extension_id`')->from('`#__extensions`')->where("`type` = 'component' AND `element` = 'com_webfonts'");
     $db->setQuery($query);
@@ -51,11 +51,11 @@ class WFVersionOneToTwo {
   protected $_db = null;
 
   public function __construct(){
-    $this->_db =& JFactory::getDBO();
+    $this->_db = JFactory::getDBO();
   }
 
   public function versionOneToTwo(){
-    $db =& $this->_db;
+    $db = $this->_db;
     $db->setQuery('SHOW COLUMNS FROM `#__webfonts_fontscom`');
     $result = $db->loadResultArray();
     if(in_array('font', $result)) $this->_changes();
@@ -67,7 +67,7 @@ class WFVersionOneToTwo {
   }
 
   protected function _structureChangesToFontscom(){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->select('*')->from('`#__webfonts_fontscom`');
     $db->setQuery($query);
@@ -102,7 +102,7 @@ QUERY;
   }
 
   protected function _addPublishingFieldToFontscomVendor(){
-    $properties =& $this->_getFontscomProperties();
+    $properties = $this->_getFontscomProperties();
     $properties->published = 0;
     $query = $this->_db->getQuery(true);
     $query->update('`#__webfonts_vendor`')->set('`properties` = ' . $this->_db->quote(json_encode($properties)))->where("`id` = '1'");
@@ -111,7 +111,7 @@ QUERY;
   }			    
 
   protected function _getFontscomProperties(){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->select('`properties`')->from('`#__webfonts_vendor`')->where("`id` = '1'");
     $db->setQuery($query);

@@ -22,8 +22,8 @@ class JTableVendor extends JTable {
     return $status;
   }
 
-  public function load($id){
-    $status = parent::load($id);
+  public function load($keys = null, $reset = true){
+    $status = parent::load($keys,$reset);
     $this->properties = json_decode($this->properties);
     return $status;
   }

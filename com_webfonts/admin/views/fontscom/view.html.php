@@ -15,12 +15,12 @@ class WebfontsViewFontscom extends JView {
   public $current = array('Project' => '', 'wfspid' => '');
   public $fonts = null;
 
-  public function display(){
+  public function display($tpl = null){
     $this->_initAssets();
     $this->_initToolbar();
-    $this->properties =& $this->get('properties');
+    $this->properties = $this->get('properties');
     $this->_loadProjectInfo();
-    $this->domains =& $this->get('domains');
+    $this->domains = $this->get('domains');
     if($this->_amIEditingThisProject()) $this->_initFontStuff();
     parent::display();
   }
@@ -38,10 +38,10 @@ class WebfontsViewFontscom extends JView {
   protected function _initFontStuff(){
     $this->loadHelper('languages');
     $this->loadHelper('filters');
-    $this->fonts =& $this->get('fonts');
-    $this->currentFonts =& $this->get('projectfontids');
+    $this->fonts = $this->get('fonts');
+    $this->currentFonts = $this->get('projectfontids');
     $this->filters = new WebfontsFontscomFilters($this->get('filters'));
-    $this->pagination =& $this->get('pagination');
+    $this->pagination = $this->get('pagination');
     $this->_addStyleDeclarationsToHeader();    
   }
 

@@ -92,7 +92,7 @@ class WebfontsModelFontscom extends JModelList {
     return $projects->Projects;
   }
 
-  public function getProperties(){
+  public function getProperties($public = true){
     return $this->_table->properties;
   }
 
@@ -323,7 +323,7 @@ class WebfontsModelFontscom extends JModelList {
   }
 
   protected function _saveFontsNotInList($wfspid, $fonts){
-    $ids =& $this->_getLocalFontIds($wfspid);
+    $ids = $this->_getLocalFontIds($wfspid);
     foreach($fonts as $font){
       if(in_array($font->FontID, $ids)) continue;
       $table = JTable::getInstance('fontscom', 'JTable');
@@ -385,7 +385,7 @@ class WebfontsModelFontscom extends JModelList {
   }
 
   protected function _unsetSelectors($wfsfid){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->update('`#__webfonts`')->set('`fontId` = NULL, `vendor` = NULL')->where("`fontId` = " . $db->quote($wfsfid) . " AND `vendor` = 'fontscom'");
     $db->setQuery($query);
@@ -454,7 +454,7 @@ class WebfontsModelFontscom extends JModelList {
 
   public function updateSelectors($local, $fallBacks){
     $this->_service->setProjectKey($this->_table->properties->wfspid);
-    $selectors =& $this->_getProjectSelectors();
+    $selectors = $this->_getProjectSelectors();
     $changes = $this->_checkForChanges($selectors, $local);
     $this->_performSelectorUpdates($changes['update']);
     $this->_performSelectorRemovals($changes['remove']);
@@ -648,7 +648,7 @@ class WebfontsModelFontscom extends JModelList {
   }
 
   protected function _syncFontsToAPI(){
-    $fonts =& $this->_getAPIFontsOnProject();
+    $fonts = $this->_getAPIFontsOnProject();
     if(!$fonts) return;
     $this->_saveFontsNotInList($this->_table->properties->wfspid, $fonts);
     $this->_removeFontsNotInList($this->_table->properties->wfspid, $fonts);
@@ -656,7 +656,7 @@ class WebfontsModelFontscom extends JModelList {
 
   protected function _syncSelectorsToAPI(){
     $this->_blankFontscomSelectors();
-    $selectors =& $this->_getProjectSelectors();
+    $selectors = $this->_getProjectSelectors();
     if(!$selectors) return;
     $local = $this->_getLocalSelectorTags();
     foreach($selectors as $selector){

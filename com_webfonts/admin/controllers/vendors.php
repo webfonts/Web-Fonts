@@ -9,9 +9,9 @@ jimport('joomla.application.component.controller');
 
 class WebfontsControllerVendors extends JController {
 
-  public function display(){
+  public function display($cachable = false, $urlparams = false){
     JRequest::setVar('view', 'vendors');
-    parent::display();
+    parent::display($cachable, $urlparams);
   }
 
 

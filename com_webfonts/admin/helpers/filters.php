@@ -23,7 +23,7 @@ class WebfontsFontscomFilters {
 			     'language' => 'WF_LANGUAGE');
 
   public function __construct($response){
-    $this->_response =& $response;
+    $this->_response = $response;
   }
 
   protected function _buildFilters(){

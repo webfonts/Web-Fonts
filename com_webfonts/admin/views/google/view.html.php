@@ -15,13 +15,13 @@ class WebfontsViewGoogle extends JView {
   protected $_marker = null;
   protected $_style = null;
 
-  public function display(){
+  public function display($tpl = null){
     $this->loadHelper('languages');
     $this->_initToolbar();
     $this->_initAssets();
-    $this->fonts =& $this->get('fonts');
-    $this->subsets =& $this->get('subsets');
-    $this->pagination =& $this->get('pagination');
+    $this->fonts = $this->get('fonts');
+    $this->subsets = $this->get('subsets');
+    $this->pagination = $this->get('pagination');
     $this->_addFontDeclarationsToHeader();
     parent::display();
   }
@@ -40,7 +40,7 @@ class WebfontsViewGoogle extends JView {
   }
 
   protected function _addFontDeclarationsToHeader(){
-    $doc =& JFactory::getDocument();
+    $doc = JFactory::getDocument();
     if(empty($this->fonts)) return;
     $families = array();
     foreach($this->fonts as $font){

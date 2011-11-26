@@ -9,12 +9,8 @@ jimport('joomla.application.component.model');
 
 class WebfontsModelStylesheet extends JModel {
 
-  protected $_vendors = array();
-
   public function __construct($config = array()){
     parent::__construct($config);
-    $this->_vendors['fontscom'] = new WebfontsModelFontscom;
-    $this->_vendors['google'] = new WebfontsModelGoogle;
   }
 
   public function getFonts(){
@@ -115,6 +111,15 @@ class WebfontsModelStylesheet extends JModel {
   protected function _error($msg){
     $this->setError($msg);
     return false;
+  }
+
+  public function __get($key){
+    if($key === '_vendors'){
+      $this->_vendors = array();
+      $this->_vendors['fontscom'] = new WebfontsModelFontscom;
+      $this->_vendors['google'] = new WebfontsModelGoogle;
+      return $this->_vendors;
+    }
   }
 
 }

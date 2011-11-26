@@ -17,7 +17,7 @@ class WebfontsModelGoogle extends JModelList {
 				     'variants' => array());
 
   public function getFonts(){
-    $properties =& $this->getState('properties');
+    $properties = $this->getState('properties');
     if($this->_isItTimeToUpdate($properties->updated)) $this->_syncFonts($properties->hash);
     return $this->getItems();
   }
@@ -28,6 +28,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _syncFonts($currentHash){
+    JLoader::load('BBRemoteClient');
     $rc = new BBRemoteClient('https://www.googleapis.com/webfonts/v1/webfonts?key=' . self::APIKEY);
     $content = $rc->get();
     if(!$content) throw new Exception(JText::_('WF_GOOGLE_LOADFAIL'));
@@ -54,7 +55,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _loadMatchingFontByFamily($family){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->select('g.id, g.family, m.mutant, m.type')->from('`#__webfonts_google` AS g')
       ->leftJoin('`#__webfonts_google_mutant` AS m ON g.id = m.fk_fontId')
@@ -64,7 +65,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _insertFont($font){
-    $table =& JTable::getInstance('Google', 'JTable');
+    $table = JTable::getInstance('Google', 'JTable');
     $table->save($font);
     $this->_loopAndInsertMutants($font, $table->id, 'variants');
     $this->_loopAndInsertMutants($font, $table->id, 'subsets');
@@ -92,12 +93,12 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _insertMutant($fontId, $variant, $type){
-    $table =& JTable::getInstance('GoogleMutant', 'JTable');
+    $table = JTable::getInstance('GoogleMutant', 'JTable');
     return $table->save(array('fk_fontId' => $fontId, 'mutant' => $variant, 'type' => $type));
   }
 
   protected function _updateLastSynced($hash){
-    $db =& $this->_db;
+    $db = $this->_db;
     $properties = new stdClass;
     $properties->updated = time();
     $properties->hash = $hash;
@@ -108,7 +109,7 @@ class WebfontsModelGoogle extends JModelList {
 
   protected function getListQuery(){
     $search = $this->_db->quote('%' . $this->getState('keyword') . '%');
-    $query =& $this->_getQueryForBaseFontInformation();
+    $query = $this->_getQueryForBaseFontInformation();
     if($search === "'%%'") {
       $query->where("m.type != 'subsets' AND f.id IN(" . $this->_getCharsetSubQuery() .  ")");    
     } else {
@@ -137,7 +138,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   public function getSubsets(){
-    $fonts =& $this->getItems();
+    $fonts = $this->getItems();
     $mids = array_keys($fonts);
     $query = $this->_db->getQuery(true);
     $query->select('`fk_fontId` AS font, `mutant`')
@@ -159,7 +160,7 @@ class WebfontsModelGoogle extends JModelList {
 
   protected function _lookupFontInfo($fid, $nameIt, $type){
     if(array_key_exists($fid, $this->_cachedFontInfo[$type])) return $this->_cachedFontInfo[$type][$fid];
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->select("`mutant` AS {$nameIt}")->from('`#__webfonts_google_mutant`')
       ->where('`fk_fontId` = ' . $db->quote($fid) . " AND `type` = '{$type}'");
@@ -196,7 +197,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _unsetSelectors($fid){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->update('`#__webfonts`')->set('`fontId` = NULL, `vendor` = NULL')->where('`fontId` = ' . $db->quote($fid) . " AND `vendor` = 'google'");
     $db->setQuery($query);
@@ -213,13 +214,13 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   public function getSelectedFonts(){
-    $query =& $this->_getQueryForBaseFontInformation();
+    $query = $this->_getQueryForBaseFontInformation();
     $query->where("`inUse` = '1'");
     $this->_db->setQuery($query);
     return $this->_processIntoStylesheetReadyFonts($this->_db->loadObjectList());
   }
 
-  protected function _processIntoStylesheetReadyFonts(&$fonts){
+  protected function _processIntoStylesheetReadyFonts($fonts){
     if(empty($fonts)) return false;
     $googleRequestUri = $this->_buildGoogleRequestUri($fonts);
     $processed = array();
@@ -234,7 +235,7 @@ class WebfontsModelGoogle extends JModelList {
     return $processed;
   }
 
-  protected function _buildGoogleRequestUri(&$fonts){
+  protected function _buildGoogleRequestUri($fonts){
     $variants = array();
     $base = 'http://fonts.googleapis.com/css?family=';
     $lookedUp = array();
@@ -258,7 +259,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   public function updateFallBackForFont($fontId, $fallBack){
-    $db =& $this->_db;    
+    $db = $this->_db;    
     $query = $db->getQuery(true);
     $updates = '`fallBack` = ' . $db->quote($fallBack);
     $query->update('`#__webfonts`')->set($updates)->where('`fontId` = ' . $db->quote($fontId) . " AND `vendor` = 'google'");
@@ -283,7 +284,7 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   public function removeSelector($selector){
-    $db =& $this->_db;    
+    $db = $this->_db;    
     $query = $db->getQuery(true);
     $query->delete('`#__webfonts`')->where('`id` = ' . $db->quote($selector->id) . " AND `vendor` = 'google'");
     $db->setQuery($query);
@@ -294,7 +295,7 @@ class WebfontsModelGoogle extends JModelList {
     return $this->_errors;
   }
 
-  protected function populateState(){
+  protected function populateState($ordering = null, $direction = null){
     parent::populateState();
     $this->setState('properties', $this->_getProperties());
     $this->setState('keyword', JRequest::getWord('keyword', false, 'get'));
@@ -302,14 +303,14 @@ class WebfontsModelGoogle extends JModelList {
   }
 
   protected function _getProperties(){
-    $db =& $this->_db;
+    $db = $this->_db;
     $query = $db->getQuery(true);
     $query->select('properties')->from('#__webfonts_vendor')->where('`id` = ' . $db->quote('2'));
     $db->setQuery($query);
     return json_decode($db->loadResult());
   }
 
-  public function preProcessAvailableSelectors(&$selectors){ }
+  public function preProcessAvailableSelectors($selectors){ }
 
   public function addSelector($selector){ }
 

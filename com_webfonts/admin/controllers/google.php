@@ -20,7 +20,7 @@ class WebfontsControllerGoogle extends JController {
   protected function _changeFontStatus($method){
     $fid = JRequest::getInt('fid', false, 'post');
     if(!$fid) $this->display();
-    $google =& $this->getModel('google');
+    $google = $this->getModel('google');
     $base = 'index.php?option=com_webfonts&view=google&subset=' . 
       JRequest::getVar('subset', 'latin') . '&keyword=' . JRequest::getVar('keyword', '');
     if($google->$method($fid)){
