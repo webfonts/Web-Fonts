@@ -38,6 +38,7 @@ class WebfontsModelStylesheet extends JModel {
     $stylesheet->selector = $selector;
     if($fontId) $stylesheet->fontId = $fontId;
     if($vendor) $stylesheet->vendor = $vendor;
+    $this->_removeSelectorIfExists($selector);
     if($vendor && $fontId) {
       $this->_vendors[$vendor]->addSelectorWithFont($selector, $fontId);
     } elseif($vendor) {
@@ -46,8 +47,20 @@ class WebfontsModelStylesheet extends JModel {
     return $stylesheet->store();
   }
 
+  protected function _removeSelectorIfExists($selector){
+    $sid = $this->_getSelectorIfExists($selector);
+    if($sid) return $this->removeSelector($sid);
+  }
+
+  protected function _getSelectorIfExists($selector){
+    $query = $this->_db->getQuery(true);
+    $query->select('`id`')->from('`#__webfonts`')->where('`selector` = ' . $this->_db->quote($selector));
+    $this->_db->setQuery($query);
+    return $this->_db->loadResult();
+  }
+
   public function removeSelector($sid){
-    $selector = $this->_getSelector($sid);
+    $selector = $this->_getSelectorById($sid);
     if($selector->vendor == null) return $this->_justDeleteSelector($sid);
     if(array_key_exists($selector->vendor, $this->_vendors))
       return $this->_vendors[$selector->vendor]->removeSelector($selector);
@@ -57,13 +70,6 @@ class WebfontsModelStylesheet extends JModel {
   protected function _justDeleteSelector($sid){
     $this->_db->setQuery('DELETE FROM `#__webfonts` WHERE `id` = ' . $this->_db->quote($sid));
     return $this->_db->query();
-  }
-
-  protected function _getSelector($sid){
-    $query = $this->_db->getQuery(true);
-    $query->select('*')->from('`#__webfonts`')->where('id = ' . $this->_db->quote($sid));
-    $this->_db->setQuery($query);
-    return $this->_db->loadObject();
   }
 
   public function updateSelectors($selectors, $fallBack = array()){
