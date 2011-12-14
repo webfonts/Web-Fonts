@@ -14,49 +14,10 @@ class WFServiceDecorator extends Services_WFS {
     $this->setOutputFormat('json');
   }
 
-  protected function _wfs_getInfo_post($method = "", $uriEnding = ''){
-    $curlurl = ROOT_URL.MAIN_API_URL.$this->uri.$uriEnding;
-    if($method === '') $curlurl .= '&wfsnopublish=1';
-    $data="";
-    $finalHeader = $this->public_key.":".$this->sign(MAIN_API_URL.$this->uri . $uriEnding, $this->public_key, $this->private_key);
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $curlurl);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_getHeader($finalHeader));
-    switch($method){
-    case "create":
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-      break;
-    case "update":
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-      break;
-    case "delete":
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-      break;
-    default:
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-      break;
-    }
-    if(!empty($this->curlPost)){
-      curl_setopt($ch, CURLOPT_POST, 1);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curlPost);
-      unset($this->curlPost);
-    }
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $this->_thanksWindoze($ch);
-    $data=curl_exec($ch);
-    curl_close($ch);
-    if(trim($data)==""){
-      throw new Exception("Curl received empty response from server to call: " . $curlurl);
-    }
-    return $data;
-  }
-  /*end curl*/  
- 
   public function newAccount($firstName, $lastName, $email){
     $this->uri = 'json/Accounts/?';
     $this->curlPost = "wfsfirst_name={$firstName}&wfslast_name={$lastName}&wfsemail={$email}";
-    return $this->_wfs_getInfo_post("create");
+    return $this->wfs_getInfo_post("create");
   }
   
   public function getAccountAuthenticationKey($email, $password){
@@ -64,7 +25,7 @@ class WFServiceDecorator extends Services_WFS {
     $this->_header = array('Content-type: text/plain',
 			   "AppKey: " . $this->api_key, 
 			   "Password: " . $password);
-    return $this->_wfs_getInfo_post();
+    return $this->wfs_getInfo_post(null, null, 'https');
   }
   
   protected function _getHeader($finalHeader){

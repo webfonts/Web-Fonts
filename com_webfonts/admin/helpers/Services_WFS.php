@@ -3,7 +3,7 @@
   License: GPL v 3.0 or later
 -----------------------------------------*/
 
-	define('ROOT_URL', "https://api.fonts.com");
+	define('ROOT_URL', "api.fonts.com");
         define('APPKEY', "693c8014-ddb8-4282-883e-551b375a2ddb1090995");
 
 	define('MAIN_API_URL',"/rest/");
@@ -33,13 +33,13 @@ class Services_WFS{
 	protected $public_key = null;
 	protected $private_key = null;
 	protected $api_key = null;
-	// Mine
+	
 	protected $_header = null;
 	protected $_autoPublish = false;
 	/**
 	* constructs a new WFS API instance
 	*/
-	function __construct(){
+	public function __construct(){
 		//default format for server responses is xml
 		$this->uri = "xml/";
 		//by default we return associative arrays  to caller
@@ -53,14 +53,13 @@ class Services_WFS{
 	* @param string $apiKey
 	* @return string - message that the server returned to test query.
 	*/
-	function setCredentials($publicKey, $privateKey, $apiKey){
+	public function setCredentials($publicKey, $privateKey, $apiKey){
 		$this->public_key = $publicKey;
 		$this->private_key = $privateKey;
 		$this->api_key = $apiKey;
 		//test the validity of the keys by listing projects
 		if($publicKey && $privateKey){
 		  $result = $this->listInternal("projects");
-
 		  return $result[MESSAGE];
 		}
 	}
@@ -71,12 +70,11 @@ class Services_WFS{
 	* @param string pid - the project id
 	* @return string - message that the server returned to test query.
 	*/
-	function setProjectKey($pkey){
+	public function setProjectKey($pkey){
 		$this->wfspid = $pkey;
 		//test the project key validity by listing domains
 		$result = $this->listInternal("domains");
-		return $result[MESSAGE];
-		
+		return $result[MESSAGE];		
 	}
 
 
@@ -85,7 +83,7 @@ class Services_WFS{
 	* This automatically causes the API to return complete json/xml responses from the server to the caller
 	* @param string $newFormat "json" for json, otherwise defaults to "xml"
 	*/
-	function setOutputFormat($newFormat=""){
+	public function setOutputFormat($newFormat=""){
 		if($newFormat == "json"){
 			//replace "xml/" with "json/" in URI
 			$this->uri = str_replace("xml/", "json/", $this->uri);
@@ -107,7 +105,7 @@ class Services_WFS{
 	* @param int start - the start page
 	* @param int  limit - how many entries to fetch per page
 	*/
-	function setWfspParams($start = "", $limit = ""){
+	public function setWfspParams($start = "", $limit = ""){
 		if(is_numeric($start) && is_numeric($limit)){
 			$this->wfspParams = "&wfspstart=".$start."&wfsplimit=".$limit;
 		}
@@ -231,7 +229,7 @@ class Services_WFS{
 	* List all projects associated with this $wfs-object
 	* @return an associative array of project name => project key -value pairs or xml/json if completeResponses is true
 	**/
-	function listProjects(){
+	public function listProjects(){
 	  $limit = ($this->wfspParams) ? '?' . substr($this->wfspParams, 1) : '';
 	  $returnMsg = $this->wfs_getInfo_post("", PROJECTS . $limit);	
     
@@ -247,7 +245,7 @@ class Services_WFS{
 	* @param string projectName - the name of project whose key we want to obtain
 	* @return string - The projectKey corresponding given projectName or null if error or not found
 	*/
-	function getProjectKeyByName($projectName){
+	public function getProjectKeyByName($projectName){
 		//Get projects
 		$projects = $this->listInternal("projects");
 		$projectKey = null;
@@ -273,7 +271,6 @@ class Services_WFS{
 			$projArr = $this->parseOutput($msg, "Project", array("ProjectName", "ProjectKey"));
 		}
 		else{
-		var_dump('hre'); die();
 			$projArr = $this->parseOutput($msg, array("Projects", "Project"), array("ProjectName", "ProjectKey"));
 		}		
 		return $projArr;	
@@ -283,7 +280,7 @@ class Services_WFS{
 	*@param string $wfs_project_name
 	*@return string
 	****/
-	function addProject($wfs_project_name) {
+	public function addProject($wfs_project_name) {
 		if(!empty($wfs_project_name)) {
 			$this->curlPost.='&wfsproject_name='.$wfs_project_name;
 		}
@@ -301,7 +298,7 @@ class Services_WFS{
 	*@param string - name of project to delete
 	*@return string - the remaining projects
 	*/
-	function deleteProject($wfs_project_name){
+	public function deleteProject($wfs_project_name){
 		$projectID = $this->findProjectIdByName($wfs_project_name);
 		$response = null;
 		//ID was found, carry on with actual deletion
@@ -343,7 +340,7 @@ class Services_WFS{
 	* List fonts from the project
 	* @return string array - an associative array of project name/project key - pairs
 	*/
-	function listFonts(){
+	public function listFonts(){
 		$request = FONTS . "?wfspid=" . $this->wfspid . $this->wfspParams;
 		$returnMsg = $this->wfs_getInfo_post("", $request);	
 		
@@ -384,7 +381,7 @@ class Services_WFS{
 	/*
 	* List domains from the project 
 	*/
-	function listDomains(){
+	public function listDomains(){
 		$request = DOMAINS . "?wfspid=" . $this->wfspid . $this->wfspParams;
 		$returnMsg = $this->wfs_getInfo_post("", $request);	
 		//return whole xml/json and do nothing else?
@@ -431,7 +428,7 @@ class Services_WFS{
 	*@param string $wfs_domain_name
 	*@return string
 	*/
-	function addDomain($wfs_domain_name) {
+	public function addDomain($wfs_domain_name) {
 		if(!empty($wfs_domain_name)) {
 			$this->curlPost.='&wfsdomain_name='.$wfs_domain_name;
 		}
@@ -449,7 +446,7 @@ class Services_WFS{
 	*@param string - name of domain to delete
 	*@return string - the remaining domains in the project
 	*/
-	function deleteDomain($wfs_domain_name){
+	public function deleteDomain($wfs_domain_name){
 		$domainID = $this->findDomainIdByName($wfs_domain_name);
 		$response = null;
 		//ID was found, carry on with actual deletion
@@ -475,7 +472,7 @@ class Services_WFS{
 	*@param string $new_domain_name - the new name of domain
 	*@return string - the domains in the project
 	*/
-	function editDomain($old_domain_name, $new_domain_name) {
+	public function editDomain($old_domain_name, $new_domain_name) {
 		
 		$wfs_domain_id = $this->findDomainIdByName($old_domain_name);
 		if(!empty($new_domain_name)) {
@@ -502,7 +499,7 @@ class Services_WFS{
 	/*
 	* List Selectors from the project 
 	*/
-	function listSelectors(){
+	public function listSelectors(){
 		$request = SELECTORS . "?wfspid=" . $this->wfspid . $this->wfspParams;
 		$returnMsg = $this->wfs_getInfo_post("", $request);	
 		//return whole xml/json and do nothing else?
@@ -550,7 +547,7 @@ class Services_WFS{
 	*@param string $wfs_selector_tag
 	*@return string
 	*/
-	function addSelector($wfs_selector_tag){
+	public function addSelector($wfs_selector_tag){
 		if(!empty($wfs_selector_tag)) {
 			$this->curlPost.='&wfsselector_tag='.urlencode($wfs_selector_tag);
 		}
@@ -568,7 +565,7 @@ class Services_WFS{
 	*@param string $wfs_selector_tag
 	*@return string - the remaining selectors in the project
 	*/
-	function deleteSelector($wfs_selector_tag){
+	public function deleteSelector($wfs_selector_tag){
 		$selectorID = $this->findSelectorIdByName($wfs_selector_tag);
 		//ID was found, carry on with actual deletion
 		$response = null;
@@ -597,7 +594,7 @@ class Services_WFS{
 	*@param string $wfs_selector_names- comma-separated list of selector names
 	*@return array - the selectors in the project
 	*/
-		function saveSelector($wfs_font_names, $wfs_selector_names){
+		public function saveSelector($wfs_font_names, $wfs_selector_names){
 		//split the strings by commas and if the resulting arrays don't match in size, return an error
 		$fontArr = explode(",", $wfs_font_names);
 		$selectorArr = explode(",", $wfs_selector_names);
@@ -608,6 +605,7 @@ class Services_WFS{
 
 
 		$fontList = $this->listInternal("fonts");
+
 		//Replace each font name in fontArr by fontId
 		for($i = 0; $i < sizeof($fontArr); $i++){
 
@@ -715,66 +713,66 @@ class Services_WFS{
 	**************STYLESHEET FUNCTIONS********
 	*****************************************/
   
-  /*******
+	/**
 	* Stylesheet adding function
 	*@param token $wfs_project_token (later we'll use project name)
 	*@return string
-	********/
-	function exportStyleSheet($wfs_project_name) {
-		$projectID = $this->findProjectIdByName($wfs_project_name);
-		$request = PROJECTSTYLESEXPORT . "?wfspid=" . $projectID . $this->wfspParams;
-		$response = $this->wfs_getInfo_post("", $request);
-		if($this->completeResponses)
-			return $response;
-		else
-		  return $this->parseProjectStyleExport($response);
+	**/
+	public function exportStyleSheet($wfs_project_name) {
+	  $projectID = $this->findProjectIdByName($wfs_project_name);
+	  $request = PROJECTSTYLESEXPORT . "?wfspid=" . $projectID . $this->wfspParams;
+	  $response = $this->wfs_getInfo_post("", $request);
+	  if($this->completeResponses)
+	    return $response;
+	  else
+	    return $this->parseProjectStyleExport($response);
 	}
-  
-  /*******
+
+	/**
 	* Stylesheet adding function
 	*@param token $wfs_project_token (later we'll use project name)
 	*@return string
-	********/
-	function importStyleSheet($wfs_project_token) {
-		$request = PROJECTSTYLESIMPORT . "?wfspid=" . $this->wfspid . "&wfsptoken=" . urlencode($wfs_project_token) . $this->wfspParams;
-		$response = $this->wfs_getInfo_post("", $request);
-		if($this->completeResponses)
-			return $response;
-		else
-      return $this->parseProjectStyle($response);
+	**/
+	public function importStyleSheet($wfs_project_token) {
+	  $request = PROJECTSTYLESIMPORT . "?wfspid=" . $this->wfspid . "&wfsptoken=" . urlencode($wfs_project_token) . $this->wfspParams;
+	  $response = $this->wfs_getInfo_post("", $request);
+	  if($this->completeResponses)
+	    return $response;
+	  else
+	    return $this->parseProjectStyle($response);
 	}
-  
-  /*******
-	* Stylesheet adding function
-	*@param token $wfs_project_token 
-	*@param name $selectorName 
-	*@return string
-	********/
-	function addStyleSheet($wfs_project_token, $selectorIDs) {
-		if($selectorIDs != null) {
-			$this->curlPost.='&wfsselector_ids='.urlencode($selectorIDs);
-		}
-		$request = PROJECTSTYLES . "?wfspid=" . $this->wfspid . "&wfsptoken=" . urlencode($wfs_project_token) . $this->wfspParams;
-		$response = $this->wfs_getInfo_post("create", $request);
-		if($this->completeResponses)
-			return $response;
-		else
-		  return $this->parseProjectStyle($response);
+	
+	/**
+	 * Stylesheet adding function
+	 *@param token $wfs_project_token 
+	 *@param name $selectorIDs comma separated ids 
+	 *@return string
+	 **/
+	public function addStyleSheet($wfs_project_token, $selectorIDs) {
+	  if($selectorIDs != null) {
+	    $this->curlPost .= '&wfsselector_ids='.urlencode($selectorIDs);
+	  }
+	  $request = PROJECTSTYLES . "?wfspid=" . $this->wfspid . "&wfsptoken=" . urlencode($wfs_project_token) . $this->wfspParams;
+	  $response = $this->wfs_getInfo_post("create", $request);
+	  if($this->completeResponses)
+	    return $response;
+	  else
+	    return $this->parseProjectStyle($response);
 	}
   
   
   	/**
-	* Protected helper function used to pass requests to parser function
-	* @param string msg - the message from which we want projects extracted
-	* @return string array - an associative array with project information
-	*/
+	 * Protected helper function used to pass requests to parser function
+	 * @param string msg - the message from which we want projects extracted
+	 * @return string array - an associative array with project information
+	 */
 	protected function parseProjectStyleExport($msg){
-		if($msg == null){
-			return $msg;
-		}
-		$projArr = array();
-		$projArr = $this->parseProjectStyleExportOutput($msg, "ProjectStyles");
-		return $projArr;	
+	  if($msg == null){
+	    return $msg;
+	  }
+	  $projArr = array();
+	  $projArr = $this->parseProjectStyleExportOutput($msg, "ProjectStyles");
+	  return $projArr;	
 	}
   
   
@@ -832,10 +830,7 @@ class Services_WFS{
 		}
 		return $arr;
 	}
-  
-  
-  
-  
+    
   
   	/**
 	* Protected helper function used to pass requests to parser function
@@ -858,19 +853,19 @@ class Services_WFS{
 
 
 	/*
-	*core function for communication with api
-	* @param string method
-	* @param string uriEnding - the uri part after http://api.fonts.com/rest/{format}/...
-	*/
-	function wfs_getInfo_post($method = "", $uriEnding){
-		$curlurl = ROOT_URL.MAIN_API_URL.$this->uri.$uriEnding;
-		$data="";
-		$finalHeader = $this->public_key.":".$this->sign(MAIN_API_URL.$this->uri . $uriEnding, $this->public_key, $this->private_key);
-		$ch = curl_init();		
+	 *core function for communication with api
+	 * @param string method
+	 * @param string uriEnding - the uri part after http://api.fonts.com/rest/{format}/...
+	 * @param string protocol - the connection type, https needed for getAccountAuthenticationKey
+	 */
+	public function wfs_getInfo_post($method = "", $uriEnding, $protocol = 'http'){
+	  $curlurl = $protocol . '://' . ROOT_URL.MAIN_API_URL.$this->uri.$uriEnding;
+	  $data="";
+	  $finalHeader = $this->public_key.":".$this->sign(MAIN_API_URL.$this->uri . $uriEnding, $this->public_key, $this->private_key);
+		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $curlurl);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: " .
-							   urlencode($finalHeader), "AppKey: " . $this->api_key));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_getHeader($finalHeader));
 		switch($method){
 			case "create":
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -909,8 +904,13 @@ class Services_WFS{
 	  if(stripos($server, 'Microsoft') !== false) curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
 	}
 
-	function sign($message, $publicKey, $privateKey){
+	public function sign($message, $publicKey, $privateKey){
 		return base64_encode(hash_hmac('md5', $publicKey."|".$message, $privateKey, true));
+	}
+
+	protected function _getHeader($finalHeader){
+	  if($this->_header) return $this->_header;
+	  return array("Authorization: " . urlencode($finalHeader), "AppKey: ".$this->api_key);
 	}
 
 } //end class Services_WFS
