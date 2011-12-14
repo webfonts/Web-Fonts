@@ -143,6 +143,7 @@ class Services_WFS{
 		else{ //format is json
 			$doc = json_decode($msg);
 			$message = null;
+			if($doc === null) return false;
 			/*Get the message-value from the json-document. This can be in different places depending
 			on if the message was successful or not.
 			if successful, the message is contained within an element (e.g. Projects or Domains)*/
