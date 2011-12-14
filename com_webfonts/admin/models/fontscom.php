@@ -101,9 +101,14 @@ class WebfontsModelFontscom extends JModelList {
     if(!$wfspid) return false;
     $this->_service->setProjectKey($wfspid);
     $domains = json_decode($this->_service->listDomains());
-    if((!property_exists($domains, 'Domains')) || ($domains->Domains->Message !== 'Success')) return false;
-    if(!property_exists($domains->Domains, 'Domain')) return false;
+    if($this->_theseAreNotTheDomainsYourLookingFor($domains)) return false;
     return (!is_array($domains->Domains->Domain)) ? array($domains->Domains->Domain) : $domains->Domains->Domain;
+  }
+
+  protected function _theseAreNotTheDomainsYourLookingFor($domains){
+    if(!$domains) return true;
+    if((!property_exists($domains, 'Domains')) || ($domains->Domains->Message !== 'Success')) return true;
+    if(!property_exists($domains->Domains, 'Domain')) return true;
   }
 
   protected function _getProjectId(){
