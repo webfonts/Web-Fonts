@@ -31,7 +31,7 @@ class WebfontsViewVendors extends JView {
   }
 
   protected function _initToolbar(){
-    JToolbarHelper::title('Web Fonts: Vendors');
+    JToolbarHelper::title(JText::_('WF_VENDORS'), 'webfonts');
     JToolbarHelper::custom('stylesheet.display', 'css', 'css', JText::_('EDIT_STYLESHEET'), false, false);
     JToolbarHelper::custom('vendors.display', 'upload', 'upload', JText::_('ADD_FONTS'), false, false);
   }

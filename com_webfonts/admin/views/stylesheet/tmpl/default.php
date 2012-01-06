@@ -36,12 +36,6 @@
     <img src="<?php echo JURI::root() ?>media/com_webfonts/images/exit.png" alt="<?php echo JText::_('DELETE') ?>" width="25" height="24" class="hoverImage" />
   </a>
 
-<?php if($details = $font->getDetails()): ?>
-
- <p class="fontDetails"><em><?php echo $details; ?></em></p>
-
-<?php endif; ?>
-
   <div class="fontPreview">
     <?php echo $font->getPreview() ?>
   </div>

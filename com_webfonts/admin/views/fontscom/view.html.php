@@ -54,7 +54,7 @@ class WebfontsViewFontscom extends JView {
   }
 
   protected function _initToolbar(){
-    JToolbarHelper::title('Web Fonts: Fonts.com');
+    JToolbarHelper::title(JText::_('WF_FONTSCOM'), 'webfonts');
     JToolbarHelper::custom('stylesheet.display', 'css', 'css', JText::_('EDIT_STYLESHEET'), false, false);
     JToolbarHelper::custom('vendors.display', 'upload', 'upload', JText::_('ADD_FONTS'), false, false);
   }

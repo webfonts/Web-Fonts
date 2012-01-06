@@ -1,3 +1,31 @@
+var buildSpinner = function(){
+
+    var flag = 0;
+
+    var that = {
+	show : function(){
+	    if(flag === 0){
+		$('sbox-content').getFirst().setStyle('display', 'none');
+		$('thinking').removeClass('hidden').inject('sbox-content', 'top');
+		flag = 1;
+	    }
+	},
+	hide: function(){
+	    if(flag === 1){
+		$('thinking').addClass('hidden').inject('webFonts', 'bottom');
+		$('sbox-content').getFirst().setStyle('display', 'block'); 
+		flag = 0;
+	    }
+	}
+	
+    };
+
+    return that;
+
+};
+
+window.wfspinner = buildSpinner();
+
 window.addEvent('domready', function(){
 
     var enterOrClick = function(inputBox, clicker, triggerMethod){
@@ -8,19 +36,6 @@ window.addEvent('domready', function(){
 		triggerMethod();
 	    }
 	});
-    };
-
-    var search = function(){
-
-	that = {};
-
-	/* Might need to pull this out of this object if this is all it does */
-	that.search = function(){
-	    $('adminForm').submit();
-	};
-
-	return that;
-
     };
 
     SqueezeBox.initialize();
@@ -39,7 +54,7 @@ window.addEvent('domready', function(){
 		el.removeClass('activeTile');
 	    });
 	    el.addEvent('click', function(){
-		SqueezeBox.open($(id), { handler: 'clone', size: {x: 550, y: 200} });
+		SqueezeBox.open($(id), { handler: 'clone', size: {x: 550, y: 200}, onClose : window.wfspinner.hide });
 	    });
 	});
     }();
@@ -53,23 +68,25 @@ window.addEvent('domready', function(){
 	$('adminForm').submit();
     });
 
-    searcher = search();
+    var form = $('adminForm');
 
-    enterOrClick('keyword', 'keywordClick', searcher.search);
+    enterOrClick('keyword', 'keywordClick', form.submit);
 
 });
 
 var addFont = function(fid){
+    window.wfspinner.show();
     fontAction(fid, 'google.addFont');
-}
+};
 
 var removeFont = function(fid){
+    window.wfspinner.show();
     fontAction(fid, 'google.removeFont');
-}
+};
 
 var fontAction = function(fid, action){
     $('fontFormTask').setProperty('value', action);
     $('fid').setProperty('value', fid);
     $('adminForm').setProperty('method', 'POST');
     $('adminForm').submit();
-}
+};

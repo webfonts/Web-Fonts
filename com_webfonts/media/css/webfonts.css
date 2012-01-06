@@ -12,11 +12,11 @@ div.beverlyClearly {
 div.beverlyClearly.ramona {
     padding: 5px 0;
 }
-/*
-div.icon-48-fontface {
-    background: url('../images/FFSampleIcon.png') 0 0 no-repeat;
+
+div.icon-48-webfonts {
+    background: url('../images/WebFontsIcon.png') 0 0 no-repeat;
 }
-*/
+
 div.hidden {
     display: none;
 }
@@ -90,6 +90,10 @@ div.notice p {
     font-size: 22px;
 }
 
+div.fontSelectList div.fontPreview {
+    padding-top: 10px;
+}
+
 .fontPreview, h3.fontTitle {
     color: rgb(102, 102, 102);
 }
@@ -122,7 +126,7 @@ input.fallBack {
     width: 100%;
     display: block;
     float: left;
-    margin-top: 8px;
+    margin-top: 2px;
     min-width: 150px;
     clear: both;
     color: rgb(102, 102, 102);
@@ -284,3 +288,41 @@ a.commercialLink {
     text-align: center;
     font-size: 1.1em;
 }
+
+/* Spinner From MooTools site*/
+
+#thinking {
+    width: 95%;
+    height: 95%;
+    position: absolute;
+    z-index: 999;
+    background-color: #ffffff;
+}
+
+#thinking img {
+    position: relative;
+    left: 48%;
+    top: 43%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -79,7 +79,7 @@ class StylesheetFontFontscom implements StylesheetFontWrapper {
   }
 
   public function getPreview() {
-    $text = "<span style=\"font-family: '" . $this->_font->family ."';\">";
+    $text = "<span style=\"font-family: '" . $this->_font->family ."';\" title=\"" . $this->getDetails() ."\">";
     $text .= $this->_font->preview;
     return $text . '</span>' . PHP_EOL;
   }
@@ -138,7 +138,7 @@ class StylesheetFontGoogle implements StylesheetFontWrapper {
     foreach($this->_subsets as $subset){
       if(strpos($subset->subset, '-ext')) continue;
       $sample = new WebfontsLanguageSampleLong($subset->subset);
-      $span .= '<span style="' . $this->_determineStyle() . '">' . $sample . '</span><br />';
+      $span .= '<span style="' . $this->_determineStyle() . '" title="' . $this->getDetails() . '">' . $sample . '</span><br />';
     }
     return substr($span, 0, -6);
   }

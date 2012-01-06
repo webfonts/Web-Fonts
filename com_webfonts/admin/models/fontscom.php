@@ -682,8 +682,7 @@ class WebfontsModelFontscom extends JModelList {
 
   protected function _blankFontscomSelectors(){
     $query = $this->_db->getQuery(true);
-    $query->update('`#__webfonts`')->set("`vendor` = NULL, `fontId` = '0'")
-      ->where("`vendor` = 'fontscom'");
+    $query->delete()->from('`#__webfonts`')->where("`vendor` = 'fontscom'");
     $this->_db->setQuery($query);
     return $this->_db->query();
   }

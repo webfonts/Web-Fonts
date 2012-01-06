@@ -140,3 +140,9 @@ $count = count($this->fonts);
 </div><!-- end #m -->
 
 </div><!-- end #google -->
+
+<div id="thinking" class="hidden">
+
+  <?php echo JHTML::image('media/com_webfonts/images/spinner.gif', 'thinking', array('height' => '31', 'width' => '31')) ?>
+
+</div>

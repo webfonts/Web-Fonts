@@ -1,4 +1,43 @@
+var buildSpinner = function(){
+
+    var flag = 0;
+
+    var that = {
+	show : function(){
+	    if(flag === 0){
+		$('sbox-content').getFirst().setStyle('display', 'none');
+		$('thinking').removeClass('hidden').inject('sbox-content', 'top');
+		flag = 1;
+	    }
+	},
+	hide: function(){
+	    if(flag === 1){
+		$('thinking').addClass('hidden').inject('webFonts', 'bottom');
+		$('sbox-content').getFirst().setStyle('display', 'block'); 
+		flag = 0;
+	    }
+	}
+	
+    };
+
+    return that;
+
+};
+
+window.wfspinner = buildSpinner();
+
 window.addEvent('domready', function(){  
+
+    var enterOrClick = function(inputBox, clicker, triggerMethod){
+	$(clicker) && $(clicker).addEvent('click', triggerMethod);
+	$(inputBox) && $(inputBox).addEvent('keypress', function(evt){
+	    if(evt.key === 'enter') {
+		evt.stop();
+		    triggerMethod();
+	    }
+	});
+    };
+
 
     var initCreateAccount = function(){
 	$('createAccountButton').addEvent('click', function(){
@@ -108,7 +147,7 @@ window.addEvent('domready', function(){
 		el.removeClass('activeTile');
 	    });
 	    el.addEvent('click', function(){
-		SqueezeBox.open($(id), { handler: 'clone', size: {x: 550, y: 270} });
+		SqueezeBox.open($(id), { handler: 'clone', size: {x: 550, y: 270}, onClose : window.wfspinner.hide });
 	    });
 	});
     }();
@@ -122,11 +161,13 @@ window.addEvent('domready', function(){
     }();
 
     var addFilterEvents = function(){
+
 	['freeorpaid','alpha', 'foundry', 'language', 'classification', 'designer'].each(function(el){
 	    var item = $(el);
 	    item && item.addEvent('change', function(){
 		var limit = $$('input[name="limitstart"]')[0];
 		limit && limit.setProperty('value', '0');
+		$('keyword').setProperty('value', '');
 		$('fontForm').submit();
 	    });
 	});
@@ -138,8 +179,15 @@ window.addEvent('domready', function(){
 	    limit && limit.setProperty('value', '0');
 	    $('fontForm').submit();
 	});
-    }();
 
+	var clearFilters = function(){
+	    $$('div.fltrt')[0].dispose();
+	    $('fontForm').submit();
+	};
+
+	enterOrClick('keyword', 'keywordSearch', clearFilters);
+
+    }();
 
 });
 
@@ -152,10 +200,12 @@ var validateNew = function(f){
 };
 
 var addFont = function(wfsfid){
+    window.wfspinner.show(); 
     fontAction(wfsfid, 'fontscom.addFont');
 };
 
 var removeFont = function(wfsfid){
+    window.wfspinner.show(); 
     fontAction(wfsfid, 'fontscom.removeFont');
 };
 

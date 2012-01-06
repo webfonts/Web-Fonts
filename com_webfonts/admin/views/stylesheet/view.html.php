@@ -41,7 +41,7 @@ class WebfontsViewStylesheet extends JView {
   }
 
   protected function _initToolbar(){
-    JToolbarHelper::title('Web Fonts: Stylesheet');
+    JToolbarHelper::title(JText::_('WF_STYLESHEET'), 'webfonts');
     JToolbarHelper::custom('stylesheet.display', 'css', 'css', JText::_('EDIT_STYLESHEET'), false, false);
     JToolbarHelper::custom('vendors.display', 'upload', 'upload', JText::_('ADD_FONTS'), false, false);
     if(!$this->_doWeHaveFonts()) return;

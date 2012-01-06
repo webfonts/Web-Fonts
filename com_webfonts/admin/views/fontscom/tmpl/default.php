@@ -224,7 +224,7 @@
     <input type="text" name="keyword" id="keyword" 
 	   value="<?php echo JRequest::getVar('keyword', '', 'post'); ?>" 
     title="<?php echo JText::_('WF_KEYWORD_TITLE') ?>"/>
-    <button type="submit" class="btn"><?php echo JText::_('SEARCH') ?></button>
+    <button type="submit" class="btn" id="keywordSearch"><?php echo JText::_('SEARCH') ?></button>
     <button type="button" onclick="document.id('keyword').value='';this.form.submit();">Clear</button>
   </div>
   <div class="filter-search fltrt">
@@ -350,5 +350,11 @@ $count = count($this->fonts);
 </div><!-- end m -->
 
 <?php echo JHtml::_('tabs.end'); ?>
+
+</div>
+
+<div id="thinking" class="hidden">
+
+  <?php echo JHTML::image('media/com_webfonts/images/spinner.gif', 'thinking', array('height' => '31', 'width' => '31')) ?>
 
 </div>
