@@ -13,10 +13,9 @@ later.
 
 ** Sponsor
 
-Fonts.com has sponsored development for the first iteration of the
-extension which has been to create the base component and connect it
-to their Web Fonts service.  However, per their request, the extension
-is open to the implementation of other font services.
+Fonts.com has sponsored development for their API and for Google Web
+Fonts.  However, per their request, the extension is open to the
+implementation of other font services.
 
 ** Author
 
@@ -25,7 +24,7 @@ and this document.
 
 ** Compatibility
 
-The extensions are compatible with versions 1.6 and 1.7 of Joomla!
+The extensions are compatible with versions 1.6, 1.7, and 2.5 of Joomla!
 
 The extensions are tested for Opera, Chrome, Safari, Firefox, and IE
 8 and IE 9.
@@ -46,17 +45,9 @@ area within the component.
 
 **** models/stylesheet.php
 
-The stylesheet is where fonts are loaded and selectors assigned.  The
-stylesheet model acts as a higher level notifier and passes
-appropriate information to other models in order to complete
-font-specific tasks for the service being written for.  The vendor
-needs to have it's name in the protected property, "vendors," in order
-to initiate appropriate actions.   Additionally, though no formal
-interface has been defined, the vendor model needs to support the
-method signatures that the stylesheet model calls.
-
-In this manner, each vendor can complete the necessary actions on its
-fonts for the Web Fonts component.
+Vendor models needed to be added to the list of vendors in the model.
+Additionally, there is an implied interface which can be viewed in
+this class.  Future improvements will explicitly define this.
 
 **** views/vendors/view.html.php
 
