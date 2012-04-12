@@ -18,27 +18,25 @@ class PluginWebfontsFontscom {
 
   public function onBeforeCompileHead(){
     if($this->_isAdmin) return;
-    $key = $this->_getActiveProject();
-    if(!$key) return false;
-    $this->_insertFallbackDeclarations($key);
+    $this->_loadActiveProjectKey();
+    $this->_insertFallbackDeclarations();
   }
 
   public function onAfterRender(){
     if($this->_isAdmin) return;
-    $key = $this->_getActiveProject();
-    if(!$key) return false;
-    $link = "<script type=\"text/javascript\" src=\"http://fast.fonts.com/jsapi/{$key}.js\"></script>";
+    $this->_loadActiveProjectKey();
+    if(!$this->_key) return;
+    $link = "<script type=\"text/javascript\" src=\"http://fast.fonts.com/jsapi/{$this->_key}.js\"></script>";
     $commentMarker = "<!-- Web Fonts: Fonts.com -->";
     $this->_head->insertBeforeClosingTag($link, $commentMarker);
   }
 
-  protected function _getActiveProject(){
+  protected function _loadActiveProjectKey(){
     $db = JFactory::getDBO();
     $key = $this->_getProjectKey($db);
     if($this->_projectHasFonts($db, $key)) {
       $this->_key = $key;
     }
-    return $this->_key;
   }
 
   protected function _getProjectKey(&$db){
@@ -60,30 +58,22 @@ class PluginWebfontsFontscom {
     return (empty($results)) ? false : true;
   }
 
-  protected function _insertFallbackDeclarations($key){
-    $declarations = $this->_getDeclarationsFromDB($key);
+  protected function _insertFallbackDeclarations(){
+    $declarations = $this->_getProjectFallbacks();
     if(!$declarations || empty($declarations)) return false;
-    $this->_encodeFontObjects($declarations);
-    $output = $this->_addFallBacks($declarations);
-    return $output;
+    $this->_addFallBacks($declarations);
   }
 
-  protected function _getDeclarationsFromDB($key){
+  protected function _getProjectFallbacks(){
     $db = JFactory::getDBO();
-    $db->setQuery('SELECT `fallBack`, `selector`, `font` FROM #__webfonts AS f INNER JOIN #__webfonts_fontscom AS w ON (f.fontId = w.FontID) WHERE w.ProjectID = ' . $db->quote($key));
+    $db->setQuery('SELECT `fallBack`, `selector`, `family` FROM #__webfonts AS f INNER JOIN #__webfonts_fontscom AS w ON (f.fontId = w.FontID) WHERE w.ProjectID = ' . $db->quote($this->_key));
     return $db->loadObjectList();
-  }
-
-  protected function _encodeFontObjects(&$declarations){
-    foreach($declarations as &$declaration){
-      $declaration->font = json_decode($declaration->font);
-    }
   }
 
   protected function _addFallBacks($declarations){
     foreach($declarations as $d){
       if($d->fallBack == '') continue;
-      $this->_head->addStyleDeclaration($d->selector, $d->font->FontCSSName, $d->fallBack);
+      $this->_head->addStyleDeclaration($d->selector, $d->family, $d->fallBack);
     }
     $this->_head->loadAllStyleDeclarations();
   }
