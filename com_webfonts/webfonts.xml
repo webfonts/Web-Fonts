@@ -7,7 +7,7 @@
   <authorUrl>http://www.bluebridgedev.com</authorUrl>
   <copyright>Copyright Monotype Imaging</copyright>
   <license>GPL Version 3 or Newer</license>
-  <version>2.0.2</version>
+  <version>%%version%%</version>
   <description><![CDATA[WEBFONTS_INSTALL]]></description>
   <menu>COM_WEBFONTS</menu>
   <files>
@@ -38,7 +38,7 @@
     </schemas>
   </update>
   <administration>
-    <menu view="cpanel">COM_WEBFONTS</menu>
+    <menu view="cpanel" img="../media/com_webfonts/images/icon-16-webfonts.png">COM_WEBFONTS</menu>
     <files folder="admin">
       <filename>index.html</filename>
       <filename>webfonts.php</filename>
