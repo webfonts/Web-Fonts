@@ -57,11 +57,6 @@ class Services_WFS{
 		$this->public_key = $publicKey;
 		$this->private_key = $privateKey;
 		$this->api_key = $apiKey;
-		//test the validity of the keys by listing projects
-		if($publicKey && $privateKey){
-		  $result = $this->listInternal("projects");
-		  return $result[MESSAGE];
-		}
 	}
 		
 	
@@ -863,55 +858,54 @@ class Services_WFS{
 	  $curlurl = $protocol . '://' . ROOT_URL.MAIN_API_URL.$this->uri.$uriEnding;
 	  $data="";
 	  $finalHeader = $this->public_key.":".$this->sign(MAIN_API_URL.$this->uri . $uriEnding, $this->public_key, $this->private_key);
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $curlurl);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_getHeader($finalHeader));
-		switch($method){
-			case "create":
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-				break;
-			case "update":
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-				break;
-			case "delete":
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-				break;
-			default:
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-				break;
-		}
-		if(!empty($this->curlPost)){
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curlPost);
-			unset($this->curlPost);
-		}
-		$this->_thanksWindoze($ch);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$data=curl_exec($ch);
-		curl_close($ch);
-		if(trim($data)==""){
-			//If the server returns an empty response, there is a fatal error in the
-			//request passed to the server and there's nothing we can do.
-			//Die and show the last passed curl-call to the user. 
-		  throw new Exception("Curl received empty response from server to call: " . $curlurl);
-		}
-		return $data;
+	  $ch = curl_init();
+	  curl_setopt($ch, CURLOPT_URL, $curlurl);
+	  curl_setopt($ch, CURLOPT_HEADER, 0);
+	  curl_setopt($ch, CURLOPT_HTTPHEADER, $this->_getHeader($finalHeader));
+	  switch($method){
+	  case "create":
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+	    break;
+	  case "update":
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+	    break;
+	  case "delete":
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	    break;
+	  default:
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+	    break;
+	  }
+	  if(!empty($this->curlPost)){
+	    curl_setopt($ch, CURLOPT_POST, 1);
+	    curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curlPost);
+	    unset($this->curlPost);
+	  }
+	  $this->_useOurCABundle($ch);
+	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	  $data=curl_exec($ch);
+	  curl_close($ch);
+	  if(trim($data)==""){
+	    //If the server returns an empty response, there is a fatal error in the
+	    //request passed to the server and there's nothing we can do.
+	    //Die and show the last passed curl-call to the user. 
+	    throw new Exception("Curl received empty response from server to call: " . $curlurl);
+	  }
+	  return $data;
 	}
 	/*end curl*/
-
-	protected function _thanksWindoze(&$ch){
-	  $server = JRequest::getVar('SERVER_SOFTWARE', '', 'server');
-	  if(stripos($server, 'Microsoft') !== false) curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
+	
+	protected function _useOurCABundle(&$ch){
+	  curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
 	}
-
+	
 	public function sign($message, $publicKey, $privateKey){
-		return base64_encode(hash_hmac('md5', $publicKey."|".$message, $privateKey, true));
+	  return base64_encode(hash_hmac('md5', $publicKey."|".$message, $privateKey, true));
 	}
-
+	
 	protected function _getHeader($finalHeader){
 	  if($this->_header) return $this->_header;
 	  return array("Authorization: " . urlencode($finalHeader), "AppKey: ".$this->api_key);
 	}
-
+	
 } //end class Services_WFS
