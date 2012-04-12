@@ -70,7 +70,7 @@ window.addEvent('domready', function(){
 
     var form = $('adminForm');
 
-    enterOrClick('keyword', 'keywordClick', form.submit);
+    enterOrClick('keyword', 'keywordClick', function(){ form.submit(); } );
 
 });
 
