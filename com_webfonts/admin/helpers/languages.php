@@ -12,6 +12,7 @@ abstract class KeyedTranslation {
 
   public function __construct($type){
     $type = strtolower($type);
+    $type = (strpos($type, ' extended')) ? str_replace(' extended', '', $type) : $type;
     $this->_type = (array_key_exists($type, $this->_samples)) ? $type : 'latin';
   }
 
