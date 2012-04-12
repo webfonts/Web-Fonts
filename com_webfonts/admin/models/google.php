@@ -272,7 +272,7 @@ class WebfontsModelGoogle extends JModelList {
       $table = JTable::getInstance('Webfonts', 'JTable');
       $table->id = (int) $selector['selectorId'];
       $table->fontId = (int) $selector['FontID'];
-      $table->fallBack = $selector['selector']->fallBack;
+      $table->fallBack = $fallBack[$selector['selectorId']];
       $table->selector = $selector['selector']->selector;
       $table->vendor = 'google';
       if(!$table->store()) {
