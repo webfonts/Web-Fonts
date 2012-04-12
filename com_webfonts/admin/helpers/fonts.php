@@ -171,11 +171,16 @@ class StylesheetFontGoogle implements StylesheetFontWrapper {
     return true;
   }
 
-  /* Might save some processor time here by alt approach */
   public function init(){
     $doc = JFactory::getDocument();
+    if($this->_notAlreadyInHead($doc)) {
+      $doc->addStylesheet(str_replace(' ', '%20', $this->_stylesheetUri));
+    }
+  }
+
+  protected function _notAlreadyInHead(&$doc){
     $headInfo = $doc->getHeadData();
-    if(!in_array($this->_stylesheetUri, $headInfo['styleSheets'])) $doc->addStylesheet($this->_stylesheetUri);
+    return (!in_array($this->_stylesheetUri, $headInfo['styleSheets']));
   }
 
 }
