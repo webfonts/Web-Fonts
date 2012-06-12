@@ -222,7 +222,6 @@ class WebfontsModelGoogle extends JModelList {
 
   protected function _processIntoStylesheetReadyFonts($fonts){
     if(empty($fonts)) return false;
-    $googleRequestUri = $this->_buildGoogleRequestUri($fonts);
     $processed = array();
     foreach($fonts as $font){
       $variant = ($font->type === 'variants') ? $font->mutant : null;
@@ -230,32 +229,40 @@ class WebfontsModelGoogle extends JModelList {
 								   'family' => $font->family,
 								   'variant' => $variant,
 								   'subsets' => $this->_getSubsetsByFontId($font->id),
-								   'stylesheetUri' => $googleRequestUri));
+								   'stylesheetUri' => $this->_buildGoogleRequestUri($font)));
     }
     return $processed;
   }
 
-  protected function _buildGoogleRequestUri($fonts){
+  protected function _buildGoogleRequestUri($font){
     $variants = array();
-    $base = 'http://fonts.googleapis.com/css?family=';
-    $lookedUp = array();
-    foreach($fonts as $font){
-      if(in_array($font->id, $lookedUp)) continue;
-      $lookedUp[] = $font->id;
-      $base .= $font->family;
-      $variants = $this->_getVariantsByFontId($font->id);
-      if(empty($variants)) {
-	$base .= '|';
-	continue;
-      }
-      $base .= ':';
-      foreach($variants as $variant){
-	$base .= $variant->variant . ',';
-      }
-      $base = substr($base, 0, -1);
-      $base .= '|';
+    $base = 'http://fonts.googleapis.com/css?family=' . $font->family;
+    $this->_addVariantsToUriBase($font->id, $base);
+    $this->_addSubsetsToUriBase($font->id, $base);
+    return $base;
+  }
+
+  protected function _addVariantsToUriBase($fontId, &$base){
+    $variants = $this->_getVariantsByFontId($fontId);
+    $base .= $this->_buildParamStringFromArray($variants, ':', 'variant');
+  }
+
+  protected function _addSubsetsToUriBase($fontId, &$base){
+    $subsets = $this->_getSubsetsByFontId($fontId);
+    $base .= $this->_buildParamStringFromArray($subsets, '&subset=', 'subset');
+  }
+
+  protected function _buildParamStringFromArray($set, $delimiter, $key){
+    if(empty($set)) return;
+    return $delimiter . $this->_createCommaSeparatedString($set, $key);
+  }
+
+  protected function _createCommaSeparatedString($set, $property){
+    $str = '';
+    foreach($set as $subset){
+      $str .= $subset->$property . ',';
     }
-    return substr($base, 0, -1);
+    return substr($str, 0, -1);
   }
 
   public function updateFallBackForFont($fontId, $fallBack){
