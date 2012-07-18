@@ -14,7 +14,7 @@ class WFHeadHelper {
     $buffer = (strpos($selector, 'body') !== 0) ? 'body ' : '';
     $buffer .= $selector . " {" . PHP_EOL;
     $buffer .= "font-family: '" . $family . "'";
-    $buffer .= ($fallBack) ? ", " . $fallBack . " !important;" . PHP_EOL : '!important;' . PHP_EOL;
+    $buffer .= ($fallBack) ? ", " . $fallBack . ";" . PHP_EOL : ';' . PHP_EOL;
     $buffer .= ($weight && is_numeric($weight)) ? 'font-weight: ' . $weight . ';' . PHP_EOL : '';
     $buffer .= ($style && ctype_alpha($style)) ? 'font-style: ' . $style . ';' . PHP_EOL : '';
     $buffer .= "}" . PHP_EOL;
