@@ -249,7 +249,7 @@ class WebfontsModelGoogle extends JModelList {
 
   protected function _addSubsetsToUriBase($fontId, &$base){
     $subsets = $this->_getSubsetsByFontId($fontId);
-    $base .= $this->_buildParamStringFromArray($subsets, '&subset=', 'subset');
+    $base .= $this->_buildParamStringFromArray($subsets, '&amp;subset=', 'subset');
   }
 
   protected function _buildParamStringFromArray($set, $delimiter, $key){
